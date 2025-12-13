@@ -171,7 +171,7 @@ const Relationships = {
                         choices: [
                             {
                                 text: 'Sure, let\'s go!',
-                                effects: { relationship: 5, social: 5, happiness: 5, energy: -10 }
+                                effects: { relationship: 5, popularity: 5, happiness: 5 }
                             },
                             {
                                 text: 'Sorry, I\'m busy',
@@ -200,7 +200,7 @@ const Relationships = {
                         choices: [
                             {
                                 text: 'Reach out to them',
-                                effects: { relationship: 5, social: 3, energy: -5 }
+                                effects: { relationship: 5, popularity: 3 }
                             },
                             {
                                 text: 'Give them space',

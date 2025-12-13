@@ -207,8 +207,14 @@ body {
     background: linear-gradient(90deg, #667eea, #8899ff);
 }
 
-.stat-fill.social {
+.stat-fill.popularity {
     background: linear-gradient(90deg, #51cf66, #8ce99a);
+}
+
+.actions-display {
+    font-weight: 700;
+    font-size: 1.2em;
+    color: #667eea;
 }
 
 .stat-fill.fitness {

@@ -5,19 +5,38 @@ const Game = {
         player: {
             name: '',
             gender: 'male',
-            age: 13,
+            age: 15,
             birthday: { month: 9, day: 1 }
         },
         
         // Stats (0-100)
         stats: {
             health: 100,
-            energy: 100,
             happiness: 100,
             intelligence: 50,
-            social: 50,
+            popularity: 50,
             fitness: 50,
             money: 0
+        },
+        
+        // Actions system
+        actions: {
+            available: 8,
+            max: 8,
+            attendedSchool: false,
+            skippedSchool: false
+        },
+        
+        // Grounding system
+        grounding: {
+            isGrounded: false,
+            daysRemaining: 0,
+            mandatoryChoresDone: false
+        },
+        
+        // Saturday detention tracking
+        saturdayDetention: {
+            hasDetention: false
         },
         
         // Time management
@@ -57,12 +76,25 @@ const Game = {
     resetStats: function() {
         this.state.stats = {
             health: 100,
-            energy: 100,
             happiness: 100,
             intelligence: 50,
-            social: 50,
+            popularity: 50,
             fitness: 50,
             money: 0
+        };
+        this.state.actions = {
+            available: 8,
+            max: 8,
+            attendedSchool: false,
+            skippedSchool: false
+        };
+        this.state.grounding = {
+            isGrounded: false,
+            daysRemaining: 0,
+            mandatoryChoresDone: false
+        };
+        this.state.saturdayDetention = {
+            hasDetention: false
         };
     },
     
@@ -163,15 +195,28 @@ const Game = {
             this.celebrateBirthday();
         }
         
-        // Reset daily stats
-        this.state.stats.energy = 100;
+        // Reset daily actions
+        this.state.actions.available = 8; // Default for weekends/skip
+        this.state.actions.attendedSchool = false;
+        this.state.actions.skippedSchool = false;
+        
+        // Handle grounding countdown
+        if (this.state.grounding.isGrounded) {
+            this.state.grounding.daysRemaining--;
+            this.state.grounding.mandatoryChoresDone = false;
+            if (this.state.grounding.daysRemaining <= 0) {
+                this.state.grounding.isGrounded = false;
+            }
+        }
+        
+        // Handle Saturday detention
+        if (this.state.saturdayDetention.hasDetention && this.state.time.dayOfWeek === 6) {
+            this.state.actions.available = 0; // No actions on detention day
+        }
     },
     
     // Apply time-based effects
     applyTimeEffects: function() {
-        // Energy decreases throughout the day
-        this.modifyStat('energy', -5);
-        
         // Happiness slowly decreases if not maintained
         if (this.state.stats.happiness > 60) {
             this.modifyStat('happiness', -1);
@@ -180,11 +225,6 @@ const Game = {
         // Health management
         if (this.state.stats.health < 100) {
             this.modifyStat('health', 1); // Slow regeneration
-        }
-        
-        // Low energy affects health
-        if (this.state.stats.energy < 20) {
-            this.modifyStat('health', -2);
         }
     },
     
@@ -229,6 +269,73 @@ const Game = {
     // Check if it's weekend
     isWeekend: function() {
         return this.state.time.dayOfWeek === 0 || this.state.time.dayOfWeek === 6;
+    },
+    
+    // Make school decision - attend school
+    attendSchool: function() {
+        this.state.actions.attendedSchool = true;
+        this.state.actions.skippedSchool = false;
+        this.state.actions.available = 3;
+        this.state.actions.max = 3;
+        return { success: true, message: 'You attended school today. You have 3 actions available.' };
+    },
+    
+    // Make school decision - skip school
+    skipSchool: function() {
+        this.state.actions.skippedSchool = true;
+        this.state.actions.attendedSchool = false;
+        this.state.actions.available = 8;
+        this.state.actions.max = 8;
+        
+        // Determine consequence (50% safe, 25% detention, 25% grounded)
+        const roll = Math.random();
+        let consequence = null;
+        
+        if (roll < 0.5) {
+            // Got away with it!
+            consequence = { type: 'safe', message: 'You got away with skipping school! 8 actions available.' };
+        } else if (roll < 0.75) {
+            // Saturday detention
+            this.state.saturdayDetention.hasDetention = true;
+            consequence = { 
+                type: 'detention', 
+                message: 'You got caught skipping! You have Saturday detention. 8 actions today, but you\'ll lose your Saturday.' 
+            };
+        } else {
+            // Grounded
+            this.state.grounding.isGrounded = true;
+            this.state.grounding.daysRemaining = 7;
+            this.state.grounding.mandatoryChoresDone = false;
+            consequence = { 
+                type: 'grounded', 
+                message: 'Your parents found out you skipped school! You\'re grounded for a week (no allowance + mandatory chores each day). 8 actions today.' 
+            };
+        }
+        
+        return { success: true, consequence: consequence };
+    },
+    
+    // Use an action
+    useAction: function() {
+        if (this.state.actions.available > 0) {
+            this.state.actions.available--;
+            return true;
+        }
+        return false;
+    },
+    
+    // Check if actions are available
+    hasActionsAvailable: function() {
+        return this.state.actions.available > 0;
+    },
+    
+    // Complete mandatory chores (when grounded)
+    completeMandatoryChores: function() {
+        if (this.state.grounding.isGrounded && !this.state.grounding.mandatoryChoresDone) {
+            this.state.grounding.mandatoryChoresDone = true;
+            return { success: true, message: 'You completed your mandatory chores for today.' };
+        }
+        return { success: false, message: 'No mandatory chores to complete.' };
     },
     
     // Get current state for saving
