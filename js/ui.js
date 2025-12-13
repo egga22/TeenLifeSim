@@ -37,7 +37,7 @@ const UI = {
         const playerGender = document.getElementById('player-gender').value;
         
         if (!playerName) {
-            alert('Please enter your name!');
+            this.showNotification('Error', 'Please enter your name!');
             return;
         }
         
@@ -63,7 +63,7 @@ const UI = {
         const saveData = Storage.load();
         
         if (!saveData) {
-            alert('No save file found!');
+            this.showNotification('Error', 'No save file found!');
             return;
         }
         
@@ -387,20 +387,83 @@ const UI = {
     
     // Show menu
     showMenu: function() {
-        const shouldQuit = confirm('Return to main menu? (Make sure to save first!)');
-        if (shouldQuit) {
-            this.showScreen('start-screen');
-        }
+        this.showConfirmation(
+            'Return to Menu?',
+            'Are you sure you want to return to the main menu? Make sure to save first!',
+            () => {
+                this.showScreen('start-screen');
+            }
+        );
     },
     
     // Show game over
     showGameOver: function() {
-        alert('You\'ve reached adulthood! The game ends here. Thanks for playing!');
-        this.showScreen('start-screen');
+        this.showNotification(
+            '🎉 Congratulations!',
+            'You\'ve reached adulthood! Your teenage years are complete. Thanks for playing!',
+            () => {
+                this.showScreen('start-screen');
+            }
+        );
     },
     
     // Capitalize first letter
     capitalizeFirst: function(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
+    },
+    
+    // Show notification modal
+    showNotification: function(title, message, callback) {
+        const modal = document.getElementById('general-modal');
+        const titleEl = document.getElementById('general-modal-title');
+        const textEl = document.getElementById('general-modal-text');
+        const buttonsEl = document.getElementById('general-modal-buttons');
+        
+        titleEl.textContent = title;
+        textEl.textContent = message;
+        buttonsEl.innerHTML = '';
+        
+        const okBtn = document.createElement('button');
+        okBtn.className = 'choice-btn';
+        okBtn.textContent = 'OK';
+        okBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            if (callback) callback();
+        });
+        
+        buttonsEl.appendChild(okBtn);
+        modal.classList.add('active');
+    },
+    
+    // Show confirmation modal
+    showConfirmation: function(title, message, onConfirm, onCancel) {
+        const modal = document.getElementById('general-modal');
+        const titleEl = document.getElementById('general-modal-title');
+        const textEl = document.getElementById('general-modal-text');
+        const buttonsEl = document.getElementById('general-modal-buttons');
+        
+        titleEl.textContent = title;
+        textEl.textContent = message;
+        buttonsEl.innerHTML = '';
+        
+        const confirmBtn = document.createElement('button');
+        confirmBtn.className = 'choice-btn';
+        confirmBtn.textContent = 'Confirm';
+        confirmBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            if (onConfirm) onConfirm();
+        });
+        
+        const cancelBtn = document.createElement('button');
+        cancelBtn.className = 'choice-btn';
+        cancelBtn.textContent = 'Cancel';
+        cancelBtn.addEventListener('click', () => {
+            modal.classList.remove('active');
+            if (onCancel) onCancel();
+        });
+        
+        buttonsEl.appendChild(confirmBtn);
+        buttonsEl.appendChild(cancelBtn);
+        modal.classList.add('active');
     }
 };
