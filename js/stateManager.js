@@ -162,6 +162,8 @@ class StateManager {
 
     // Apply daily stat changes
     applyDailyStatChanges() {
+        const time = this.state.time;
+        
         // Energy recovers slightly each day
         const energyRecovery = time.dayOfWeek === 6 || time.dayOfWeek === 7 ? 15 : 5;
         
