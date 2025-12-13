@@ -25,7 +25,7 @@ const Events = {
                 },
                 {
                     text: 'Turn it in to lost and found',
-                    effects: { happiness: 3, social: 2 }
+                    effects: { happiness: 3, popularity: 2 }
                 }
             ]
         },
@@ -37,7 +37,7 @@ const Events = {
             choices: [
                 {
                     text: 'Stay inside',
-                    effects: { happiness: -2, energy: 5 }
+                    effects: { happiness: -2 }
                 }
             ]
         },
@@ -49,7 +49,7 @@ const Events = {
             choices: [
                 {
                     text: 'Nice!',
-                    effects: { happiness: 10, energy: 5 }
+                    effects: { happiness: 10 }
                 }
             ]
         },
@@ -61,7 +61,7 @@ const Events = {
             choices: [
                 {
                     text: 'Take a break',
-                    effects: { happiness: 5, energy: -10, intelligence: -2 }
+                    effects: { happiness: 5, intelligence: -2 }
                 },
                 {
                     text: 'Push through',
@@ -94,7 +94,7 @@ const Events = {
             choices: [
                 {
                     text: 'Thank them',
-                    effects: { happiness: 5, social: 3 }
+                    effects: { happiness: 5, popularity: 3 }
                 }
             ]
         },
@@ -106,7 +106,7 @@ const Events = {
             choices: [
                 {
                     text: 'Try to power through',
-                    effects: { energy: -15, health: -5 }
+                    effects: { health: -5 }
                 }
             ]
         },
@@ -118,7 +118,7 @@ const Events = {
             choices: [
                 {
                     text: 'Buy tickets ($80)',
-                    effects: { money: -80, happiness: 20, social: 5 },
+                    effects: { money: -80, happiness: 20, popularity: 5 },
                     requirement: { money: 80 }
                 },
                 {
@@ -149,15 +149,15 @@ const Events = {
             choices: [
                 {
                     text: 'Take the lead',
-                    effects: { intelligence: 5, social: 3, energy: -15 }
+                    effects: { intelligence: 5, popularity: 3 }
                 },
                 {
                     text: 'Do your part',
-                    effects: { intelligence: 3, social: 2, energy: -10 }
+                    effects: { intelligence: 3, popularity: 2 }
                 },
                 {
                     text: 'Let others do it',
-                    effects: { energy: 5, social: -5, intelligence: -2 }
+                    effects: { popularity: -5, intelligence: -2 }
                 }
             ]
         },
@@ -168,19 +168,19 @@ const Events = {
             choices: [
                 {
                     text: 'Join the sports club',
-                    effects: { fitness: 5, social: 5, happiness: 5 }
+                    effects: { fitness: 5, popularity: 5, happiness: 5 }
                 },
                 {
                     text: 'Join the debate club',
-                    effects: { intelligence: 5, social: 5, happiness: 3 }
+                    effects: { intelligence: 5, popularity: 5, happiness: 3 }
                 },
                 {
                     text: 'Join the art club',
-                    effects: { intelligence: 3, social: 5, happiness: 8 }
+                    effects: { intelligence: 3, popularity: 5, happiness: 8 }
                 },
                 {
                     text: 'Don\'t join anything',
-                    effects: { energy: 5 }
+                    effects: { happiness: 2 }
                 }
             ]
         }
@@ -195,7 +195,7 @@ const Events = {
             choices: [
                 {
                     text: 'Rest at home',
-                    effects: { health: 10, energy: 20, intelligence: -5, social: -5 }
+                    effects: { health: 10, intelligence: -5, popularity: -5 }
                 },
                 {
                     text: 'Go to school anyway',
@@ -221,8 +221,8 @@ const Events = {
         // Clear old events
         this.eventQueue = [];
         
-        // Check for time-based events
-        if (Game.isSchoolDay() && Game.state.time.period === 'morning') {
+        // Only trigger school events if player went to school
+        if (Game.isSchoolDay() && Game.state.time.period === 'morning' && Game.state.school.wentToSchool) {
             // Chance for school events
             if (Math.random() < 0.15) {
                 const event = this.schoolEvents[Math.floor(Math.random() * this.schoolEvents.length)];
@@ -265,20 +265,6 @@ const Events = {
             }
         }
         
-        // Check for stat-based events
-        if (Game.state.stats.energy < 20) {
-            this.eventQueue.push({
-                text: 'You\'re exhausted and can barely keep your eyes open.',
-                category: 'health',
-                choices: [
-                    {
-                        text: 'Rest immediately',
-                        effects: { energy: 20, health: 5 }
-                    }
-                ]
-            });
-        }
-        
         if (Game.state.stats.happiness < 20) {
             this.eventQueue.push({
                 text: 'You\'re feeling really down lately.',
@@ -286,7 +272,7 @@ const Events = {
                 choices: [
                     {
                         text: 'Talk to someone',
-                        effects: { happiness: 10, social: 5 }
+                        effects: { happiness: 10, popularity: 5 }
                     },
                     {
                         text: 'Deal with it alone',

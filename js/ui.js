@@ -54,8 +54,14 @@ const UI = {
         this.addEventLog('Welcome to your teenage years! Make the most of it!', 'success');
         this.updateActivities();
         
-        // Check for initial events
-        this.checkAndShowEvents();
+        // Check if starting on a school day
+        if (Game.isSchoolDay() && Game.state.time.period === 'morning') {
+            this.showSchoolChoice();
+        } else {
+            // Weekend - set 8 actions
+            Game.setDailyActions(false);
+            this.checkAndShowEvents();
+        }
     },
     
     // Load game
@@ -107,21 +113,22 @@ const UI = {
     // Update stats display
     updateStats: function() {
         const stats = Game.state.stats;
+        const actions = Game.state.actions;
         
         // Update stat bars
         this.updateStatBar('health', stats.health);
-        this.updateStatBar('energy', stats.energy);
+        this.updateStatBar('actions', (actions.current / actions.max) * 100);
         this.updateStatBar('happiness', stats.happiness);
         this.updateStatBar('intelligence', stats.intelligence);
-        this.updateStatBar('social', stats.social);
+        this.updateStatBar('popularity', stats.popularity);
         this.updateStatBar('fitness', stats.fitness);
         
         // Update values
         document.getElementById('health-value').textContent = Math.round(stats.health);
-        document.getElementById('energy-value').textContent = Math.round(stats.energy);
+        document.getElementById('actions-value').textContent = `${actions.current}/${actions.max}`;
         document.getElementById('happiness-value').textContent = Math.round(stats.happiness);
         document.getElementById('intelligence-value').textContent = Math.round(stats.intelligence);
-        document.getElementById('social-value').textContent = Math.round(stats.social);
+        document.getElementById('popularity-value').textContent = Math.round(stats.popularity);
         document.getElementById('fitness-value').textContent = Math.round(stats.fitness);
         document.getElementById('money-value').textContent = `$${Math.round(stats.money)}`;
         
@@ -129,6 +136,17 @@ const UI = {
         const gradeAverage = Education.state.gradeAverage;
         const letterGrade = Education.getLetterGrade(gradeAverage);
         document.getElementById('grade-value').textContent = `${letterGrade} (${Math.round(gradeAverage)}%)`;
+        
+        // Update grounded status if displayed
+        const groundedStatus = document.getElementById('grounded-status');
+        if (groundedStatus) {
+            if (Game.isGrounded()) {
+                groundedStatus.textContent = `Grounded: ${Game.state.school.groundedDaysLeft} days left`;
+                groundedStatus.style.display = 'block';
+            } else {
+                groundedStatus.style.display = 'none';
+            }
+        }
     },
     
     // Update stat bar
@@ -156,7 +174,7 @@ const UI = {
             activityDiv.innerHTML = `
                 <h4>${activity.name}</h4>
                 <p>${activity.description}</p>
-                <span class="activity-cost">Energy: ${activity.energyCost}</span>
+                <span class="activity-cost">Actions: ${activity.actionCost}</span>
                 ${this.getActivityEffectsHTML(activity.effects)}
             `;
             
@@ -199,13 +217,37 @@ const UI = {
     // Advance time
     advanceTime: function() {
         const oldPeriod = Game.state.time.period;
+        
+        // Check if grounded and trying to end the day without doing chores
+        if (Game.isGrounded() && oldPeriod === 'night' && !Game.state.school.didMandatoryChores) {
+            this.showNotification('Chores Required!', 'You\'re grounded and must do your chores before going to sleep!');
+            return;
+        }
+        
         Game.advanceTime();
         const newPeriod = Game.state.time.period;
         
-        // Attend school if it's a school day during school hours
-        if (Game.isSchoolDay() && (newPeriod === 'morning' || newPeriod === 'afternoon')) {
-            Education.attendSchool();
-            this.addEventLog('You attended school.', 'success');
+        // Check if it's a new day and a school day - show school choice
+        if (newPeriod === 'morning' && oldPeriod === 'night') {
+            if (Game.isSchoolDay()) {
+                this.showSchoolChoice();
+                return; // Don't proceed until player makes choice
+            } else {
+                // Weekend - set 8 actions
+                Game.setDailyActions(false);
+                this.addEventLog('It\'s the weekend! You have 8 actions today.', 'success');
+            }
+        }
+        
+        // Check for Saturday detention
+        if (Game.state.school.saturdayDetention && Game.state.time.dayOfWeek === 6 && newPeriod === 'morning') {
+            this.showSaturdayDetention();
+            return;
+        }
+        
+        // Check for mandatory chores when grounded
+        if (Game.isGrounded() && newPeriod === 'morning') {
+            this.addEventLog(`You're grounded! ${Game.state.school.groundedDaysLeft} days left. You must do chores before bed.`, 'warning');
         }
         
         this.addEventLog(`Time advanced to ${this.capitalizeFirst(newPeriod)}.`, 'success');
@@ -218,6 +260,80 @@ const UI = {
         if (Game.state.player.age > Game.MAX_AGE) {
             this.showGameOver();
         }
+    },
+    
+    // Show school choice modal
+    showSchoolChoice: function() {
+        const modal = document.getElementById('event-modal');
+        const title = document.getElementById('modal-title');
+        const text = document.getElementById('modal-text');
+        const choicesDiv = document.getElementById('modal-choices');
+        
+        title.textContent = 'School Day';
+        text.textContent = 'It\'s a school day! What do you want to do?';
+        
+        choicesDiv.innerHTML = '';
+        
+        // Go to school button
+        const goBtn = document.createElement('button');
+        goBtn.className = 'choice-btn';
+        goBtn.textContent = 'Go to School (3 actions)';
+        goBtn.addEventListener('click', () => this.handleSchoolChoice(true));
+        choicesDiv.appendChild(goBtn);
+        
+        // Skip school button
+        const skipBtn = document.createElement('button');
+        skipBtn.className = 'choice-btn';
+        skipBtn.textContent = 'Skip School (8 actions, risky!)';
+        skipBtn.addEventListener('click', () => this.handleSchoolChoice(false));
+        choicesDiv.appendChild(skipBtn);
+        
+        modal.classList.add('active');
+    },
+    
+    // Handle school choice
+    handleSchoolChoice: function(wentToSchool) {
+        this.closeEventModal();
+        
+        Game.state.school.wentToSchool = wentToSchool;
+        Game.setDailyActions(wentToSchool);
+        
+        if (wentToSchool) {
+            Education.attendSchool();
+            this.addEventLog('You went to school. You have 3 actions for the rest of the day.', 'success');
+        } else {
+            Game.state.school.skippedToday = true;
+            Education.missSchool();
+            
+            // Check consequences
+            const result = Game.handleSkipSchool();
+            
+            if (result.result === 'success') {
+                this.addEventLog(result.message, 'success');
+                this.addEventLog('You have 8 actions today!', 'success');
+            } else if (result.result === 'detention') {
+                this.addEventLog(result.message, 'warning');
+                this.addEventLog('You have 8 actions today, but Saturday detention awaits...', 'warning');
+            } else {
+                this.addEventLog(result.message, 'danger');
+                this.addEventLog('You have 8 actions today, but you\'re grounded!', 'danger');
+            }
+        }
+        
+        this.updateUI();
+        this.updateActivities();
+        this.checkAndShowEvents();
+    },
+    
+    // Show Saturday detention
+    showSaturdayDetention: function() {
+        Game.state.school.saturdayDetention = false;
+        Game.setDailyActions(true); // Only 3 actions on detention day
+        
+        this.addEventLog('You have Saturday detention today. Only 3 actions available.', 'warning');
+        
+        this.updateUI();
+        this.updateActivities();
     },
     
     // Check and show events
