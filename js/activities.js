@@ -6,7 +6,7 @@ const Activities = {
         study_math: {
             name: 'Study Math',
             description: 'Work on math homework and problems',
-            energyCost: 15,
+            actionCost: 1,
             effects: {
                 intelligence: 3,
                 happiness: -2
@@ -17,7 +17,7 @@ const Activities = {
         study_science: {
             name: 'Study Science',
             description: 'Read science textbooks and do experiments',
-            energyCost: 15,
+            actionCost: 1,
             effects: {
                 intelligence: 3,
                 happiness: -1
@@ -28,7 +28,7 @@ const Activities = {
         study_english: {
             name: 'Study English',
             description: 'Read literature and practice writing',
-            energyCost: 12,
+            actionCost: 1,
             effects: {
                 intelligence: 2,
                 happiness: 0
@@ -37,36 +37,50 @@ const Activities = {
             availableWhen: ['morning', 'afternoon', 'evening']
         },
         
+        // Chores (for earning money and mandatory when grounded)
+        do_chores: {
+            name: 'Do Chores',
+            description: 'Help out around the house and earn some money',
+            actionCost: 1,
+            effects: {
+                money: 10,
+                happiness: -3
+            },
+            availableWhen: ['morning', 'afternoon', 'evening']
+        },
+        
         // Social Activities
         hang_out: {
             name: 'Hang Out with Friends',
             description: 'Spend time with your friends',
-            energyCost: 10,
+            actionCost: 1,
             effects: {
-                social: 5,
+                popularity: 5,
                 happiness: 5,
                 intelligence: -1
             },
-            availableWhen: ['afternoon', 'evening']
+            availableWhen: ['afternoon', 'evening'],
+            notWhenGrounded: true
         },
         party: {
             name: 'Go to a Party',
             description: 'Attend a party (weekend only)',
-            energyCost: 20,
+            actionCost: 2,
             effects: {
-                social: 10,
+                popularity: 10,
                 happiness: 10,
                 health: -5
             },
             availableWhen: ['evening', 'night'],
-            weekendOnly: true
+            weekendOnly: true,
+            notWhenGrounded: true
         },
         social_media: {
             name: 'Check Social Media',
             description: 'Browse social media and chat online',
-            energyCost: 5,
+            actionCost: 1,
             effects: {
-                social: 2,
+                popularity: 2,
                 happiness: 2
             },
             availableWhen: ['morning', 'afternoon', 'evening', 'night']
@@ -76,7 +90,7 @@ const Activities = {
         exercise: {
             name: 'Exercise',
             description: 'Go for a run or work out',
-            energyCost: 20,
+            actionCost: 1,
             effects: {
                 fitness: 5,
                 health: 3,
@@ -87,35 +101,37 @@ const Activities = {
         sports_practice: {
             name: 'Sports Practice',
             description: 'Practice your favorite sport',
-            energyCost: 25,
+            actionCost: 1,
             effects: {
                 fitness: 7,
                 health: 2,
-                social: 3,
+                popularity: 3,
                 happiness: 5
             },
-            availableWhen: ['afternoon', 'evening']
+            availableWhen: ['afternoon', 'evening'],
+            notWhenGrounded: true
         },
         
         // Work Activities
         part_time_job: {
             name: 'Part-Time Job',
             description: 'Work for money',
-            energyCost: 30,
+            actionCost: 2,
             effects: {
                 money: 50,
                 happiness: -5,
-                social: 1
+                popularity: 1
             },
             availableWhen: ['afternoon', 'evening'],
-            minimumAge: 15
+            minimumAge: 15,
+            notWhenGrounded: true
         },
         
         // Leisure Activities
         play_games: {
             name: 'Play Video Games',
             description: 'Relax and play games',
-            energyCost: 8,
+            actionCost: 1,
             effects: {
                 happiness: 8,
                 intelligence: -1,
@@ -126,7 +142,7 @@ const Activities = {
         watch_tv: {
             name: 'Watch TV',
             description: 'Watch shows and movies',
-            energyCost: 5,
+            actionCost: 1,
             effects: {
                 happiness: 5,
                 fitness: -1
@@ -136,7 +152,7 @@ const Activities = {
         read_book: {
             name: 'Read a Book',
             description: 'Read for pleasure',
-            energyCost: 8,
+            actionCost: 1,
             effects: {
                 intelligence: 2,
                 happiness: 4
@@ -148,57 +164,47 @@ const Activities = {
         rest: {
             name: 'Rest',
             description: 'Take a nap or relax',
-            energyCost: -20,
+            actionCost: 1,
             effects: {
                 health: 5,
                 happiness: 2
             },
             availableWhen: ['afternoon', 'evening']
         },
-        sleep: {
-            name: 'Sleep',
-            description: 'Get a good night\'s sleep',
-            energyCost: -50,
-            effects: {
-                health: 10,
-                energy: 60
-            },
-            availableWhen: ['night'],
-            advancesTime: true
-        },
         
         // Special Activities
         volunteer: {
             name: 'Volunteer Work',
             description: 'Help out in the community',
-            energyCost: 20,
+            actionCost: 1,
             effects: {
                 happiness: 8,
-                social: 4,
+                popularity: 4,
                 intelligence: 1
             },
             availableWhen: ['afternoon'],
-            weekendOnly: true
+            weekendOnly: true,
+            notWhenGrounded: true
         },
         music_practice: {
             name: 'Practice Music',
             description: 'Play an instrument or sing',
-            energyCost: 12,
+            actionCost: 1,
             effects: {
                 intelligence: 2,
                 happiness: 6,
-                social: 1
+                popularity: 1
             },
             availableWhen: ['afternoon', 'evening']
         },
         art_project: {
             name: 'Work on Art',
             description: 'Draw, paint, or create',
-            energyCost: 15,
+            actionCost: 1,
             effects: {
                 intelligence: 2,
                 happiness: 7,
-                social: 1
+                popularity: 1
             },
             availableWhen: ['afternoon', 'evening']
         }
@@ -210,6 +216,7 @@ const Activities = {
         const currentPeriod = Game.state.time.period;
         const isWeekend = Game.isWeekend();
         const playerAge = Game.state.player.age;
+        const isGrounded = Game.isGrounded();
         
         for (const [id, activity] of Object.entries(this.definitions)) {
             // Check if available in current time period
@@ -227,8 +234,13 @@ const Activities = {
                 continue;
             }
             
-            // Check if player has enough energy
-            const canAfford = Game.state.stats.energy >= activity.energyCost;
+            // Check if activity is blocked when grounded
+            if (activity.notWhenGrounded && isGrounded) {
+                continue;
+            }
+            
+            // Check if player has enough actions
+            const canAfford = Game.hasActions(activity.actionCost);
             
             available.push({
                 id: id,
@@ -248,13 +260,18 @@ const Activities = {
             return { success: false, message: 'Activity not found' };
         }
         
-        // Check energy requirement
-        if (Game.state.stats.energy < activity.energyCost) {
-            return { success: false, message: 'Not enough energy!' };
+        // Check actions requirement
+        if (!Game.hasActions(activity.actionCost)) {
+            return { success: false, message: 'Not enough actions!' };
         }
         
-        // Apply energy cost
-        Game.modifyStat('energy', -activity.energyCost);
+        // Check if blocked when grounded
+        if (activity.notWhenGrounded && Game.isGrounded()) {
+            return { success: false, message: 'You\'re grounded and can\'t do this!' };
+        }
+        
+        // Use actions
+        Game.useAction(activity.actionCost);
         
         // Apply effects
         for (const [stat, value] of Object.entries(activity.effects)) {

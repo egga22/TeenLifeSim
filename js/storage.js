@@ -9,7 +9,8 @@ const Storage = {
                 game: Game.getState(),
                 education: Education.getState(),
                 relationships: Relationships.getState(),
-                timestamp: Date.now()
+                timestamp: Date.now(),
+                version: 2 // Version for new actions system
             };
             
             localStorage.setItem(this.SAVE_KEY, JSON.stringify(saveData));
@@ -30,6 +31,13 @@ const Storage = {
             }
             
             const data = JSON.parse(saveData);
+            
+            // Check for old save format and migrate if needed
+            if (!data.version || data.version < 2) {
+                // Old save - clear it and return null
+                this.deleteSave();
+                return null;
+            }
             
             // Restore game state
             Game.loadState(data.game);

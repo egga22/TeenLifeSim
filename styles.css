@@ -195,8 +195,8 @@ body {
     background: linear-gradient(90deg, #ff6b6b, #ff8787);
 }
 
-.stat-fill.energy {
-    background: linear-gradient(90deg, #ffd93d, #ffe66d);
+.stat-fill.actions {
+    background: linear-gradient(90deg, #20c997, #38d9a9);
 }
 
 .stat-fill.happiness {
@@ -207,12 +207,22 @@ body {
     background: linear-gradient(90deg, #667eea, #8899ff);
 }
 
-.stat-fill.social {
-    background: linear-gradient(90deg, #51cf66, #8ce99a);
+.stat-fill.popularity {
+    background: linear-gradient(90deg, #f59f00, #fcc419);
 }
 
 .stat-fill.fitness {
     background: linear-gradient(90deg, #ff922b, #ffa94d);
+}
+
+.grounded-indicator {
+    color: #ff6b6b;
+    font-weight: bold;
+    font-size: 0.9em;
+    padding: 5px;
+    background: #ffe8e8;
+    border-radius: 5px;
+    margin-top: 10px;
 }
 
 .money-display,
