@@ -188,7 +188,7 @@ const Relationships = {
                             },
                             {
                                 text: 'Say you don\'t have time',
-                                effects: { relationship: -3, energy: 5 }
+                                effects: { relationship: -3}
                             }
                         ]
                     }

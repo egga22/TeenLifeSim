@@ -44,7 +44,7 @@ const Game = {
             year: 2024,
             month: 9, // September (start of school year)
             day: 1,
-            dayOfWeek: 1, // Monday
+            dayOfWeek: 1, // 0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday
             period: 'morning', // morning, afternoon, evening, night
             periodsInDay: 0
         },

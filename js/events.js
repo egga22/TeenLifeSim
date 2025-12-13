@@ -37,7 +37,7 @@ const Events = {
             choices: [
                 {
                     text: 'Stay inside',
-                    effects: { happiness: -2, energy: 5 }
+                    effects: { happiness: -2}
                 }
             ]
         },
@@ -49,7 +49,7 @@ const Events = {
             choices: [
                 {
                     text: 'Nice!',
-                    effects: { happiness: 10, energy: 5 }
+                    effects: { happiness: 10}
                 }
             ]
         },
@@ -61,7 +61,7 @@ const Events = {
             choices: [
                 {
                     text: 'Take a break',
-                    effects: { happiness: 5, energy: -10, intelligence: -2 }
+                    effects: { happiness: 5, intelligence: -2 }
                 },
                 {
                     text: 'Push through',
@@ -106,7 +106,7 @@ const Events = {
             choices: [
                 {
                     text: 'Try to power through',
-                    effects: { energy: -15, health: -5 }
+                    effects: { health: -5 }
                 }
             ]
         },
@@ -149,15 +149,15 @@ const Events = {
             choices: [
                 {
                     text: 'Take the lead',
-                    effects: { intelligence: 5, popularity: 3, energy: -15 }
+                    effects: { intelligence: 5, popularity: 3}
                 },
                 {
                     text: 'Do your part',
-                    effects: { intelligence: 3, popularity: 2, energy: -10 }
+                    effects: { intelligence: 3, popularity: 2}
                 },
                 {
                     text: 'Let others do it',
-                    effects: { energy: 5, popularity: -5, intelligence: -2 }
+                    effects: { popularity: -5, intelligence: -2 }
                 }
             ]
         },
@@ -180,7 +180,7 @@ const Events = {
                 },
                 {
                     text: 'Don\'t join anything',
-                    effects: { energy: 5 }
+                    effects: { }
                 }
             ]
         }
@@ -195,7 +195,7 @@ const Events = {
             choices: [
                 {
                     text: 'Rest at home',
-                    effects: { health: 10, energy: 20, intelligence: -5, popularity: -5 }
+                    effects: { health: 10, intelligence: -5, popularity: -5 }
                 },
                 {
                     text: 'Go to school anyway',
@@ -273,7 +273,7 @@ const Events = {
                 choices: [
                     {
                         text: 'Rest immediately',
-                        effects: { energy: 20, health: 5 }
+                        effects: { health: 5 }
                     }
                 ]
             });
