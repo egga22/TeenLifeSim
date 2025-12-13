@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Life Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-container">
+        <header>
+            <h1>Teen Life Simulator</h1>
+            <div class="time-info">
+                <span id="day-display">Day 1</span>
+                <span id="time-display">Morning</span>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <!-- Character Stats Panel -->
+            <aside class="stats-panel">
+                <h2>Character</h2>
+                <div id="character-name" class="character-name"></div>
+                
+                <div class="stats-section">
+                    <h3>Attributes</h3>
+                    <div class="stat-item">
+                        <label>Health:</label>
+                        <div class="stat-bar">
+                            <div id="health-bar" class="stat-fill health"></div>
+                        </div>
+                        <span id="health-value">100</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Happiness:</label>
+                        <div class="stat-bar">
+                            <div id="happiness-bar" class="stat-fill happiness"></div>
+                        </div>
+                        <span id="happiness-value">100</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Energy:</label>
+                        <div class="stat-bar">
+                            <div id="energy-bar" class="stat-fill energy"></div>
+                        </div>
+                        <span id="energy-value">100</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Grades:</label>
+                        <div class="stat-bar">
+                            <div id="grades-bar" class="stat-fill grades"></div>
+                        </div>
+                        <span id="grades-value">75</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Money:</label>
+                        <span id="money-value">$50</span>
+                    </div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Relationships</h3>
+                    <div id="relationships-list" class="relationships-list"></div>
+                </div>
+
+                <div class="stats-section">
+                    <h3>Inventory</h3>
+                    <div id="inventory-list" class="inventory-list"></div>
+                </div>
+            </aside>
+
+            <!-- Main Game Area -->
+            <main class="game-area">
+                <!-- Start Screen -->
+                <div id="start-screen" class="screen active">
+                    <h2>Welcome to Teen Life Simulator!</h2>
+                    <p>Create your character and begin your journey through teenage life.</p>
+                    <div class="form-group">
+                        <label for="character-name-input">Your Name:</label>
+                        <input type="text" id="character-name-input" placeholder="Enter your name" maxlength="20">
+                    </div>
+                    <button id="start-game-btn" class="btn-primary">Start Game</button>
+                </div>
+
+                <!-- Activities Screen -->
+                <div id="activities-screen" class="screen">
+                    <h2>Activities</h2>
+                    <p class="description">Choose an activity to do:</p>
+                    <div id="activities-list" class="activities-list"></div>
+                </div>
+
+                <!-- Event Screen -->
+                <div id="event-screen" class="screen">
+                    <h2 id="event-title">Event</h2>
+                    <p id="event-description" class="description"></p>
+                    <div id="event-choices" class="choices-list"></div>
+                </div>
+
+                <!-- Message Screen -->
+                <div id="message-screen" class="screen">
+                    <div id="message-content" class="message-content"></div>
+                    <button id="message-continue-btn" class="btn-primary">Continue</button>
+                </div>
+            </main>
+        </div>
+
+        <!-- Action Log -->
+        <footer class="action-log">
+            <h3>Activity Log</h3>
+            <div id="log-content" class="log-content"></div>
+        </footer>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="js/state.js"></script>
+    <script src="js/character.js"></script>
+    <script src="js/relationships.js"></script>
+    <script src="js/inventory.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/activities.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
