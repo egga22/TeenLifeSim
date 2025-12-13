@@ -3,7 +3,7 @@
 class GeminiAPI {
     constructor() {
         this.apiKey = null;
-        this.baseURL = 'https://generativelanguage.googleapis.com/v1beta/models/';
+        this.baseURL = CONFIG.ai.baseURL || 'https://generativelanguage.googleapis.com/v1beta/models/';
         this.model = CONFIG.ai.modelName;
     }
 

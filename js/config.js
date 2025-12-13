@@ -44,6 +44,7 @@ const CONFIG = {
     
     // AI Configuration
     ai: {
+        baseURL: 'https://generativelanguage.googleapis.com/v1beta/models/',
         modelName: 'gemini-1.5-pro',
         temperature: 0.9,
         maxTokens: 500

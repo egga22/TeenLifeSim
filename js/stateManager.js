@@ -121,7 +121,7 @@ class StateManager {
         const time = { ...this.state.time };
         time.day++;
         time.totalDays++;
-        // Cycle through 1-7 for days of week (1=Monday, 7=Sunday)
+        // Cycle through 1-7 for days of week (1=Monday, 2=Tuesday, ... 6=Saturday, 7=Sunday)
         time.dayOfWeek = time.dayOfWeek === 7 ? 1 : time.dayOfWeek + 1;
 
         // Week progression
@@ -165,7 +165,7 @@ class StateManager {
     applyDailyStatChanges() {
         const time = this.state.time;
         
-        // Energy recovers slightly each day
+        // Energy recovers more on weekends (Saturday=6, Sunday=7)
         const energyRecovery = time.dayOfWeek === 6 || time.dayOfWeek === 7 ? 15 : 5;
         
         // Health slowly recovers

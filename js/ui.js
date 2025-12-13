@@ -164,7 +164,7 @@ class UIController {
         const relationships = this.stateManager.getState().relationships;
 
         if (relationships.length === 0) {
-            this.elements.relationshipsList.innerHTML = '<p style="text-align: center; color: var(--text-secondary); padding: 1rem;">No relationships yet</p>';
+            this.elements.relationshipsList.innerHTML = '<p class="empty-message">No relationships yet</p>';
             return;
         }
 
@@ -226,7 +226,7 @@ class UIController {
         const history = this.stateManager.getState().history;
 
         if (history.length === 0) {
-            this.elements.logEntries.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No events yet</p>';
+            this.elements.logEntries.innerHTML = '<p class="empty-message">No events yet</p>';
             return;
         }
 
@@ -266,7 +266,7 @@ class UIController {
         return new Promise(resolve => {
             // Update event description with result
             this.elements.eventDescription.innerHTML = `
-                <p style="background: var(--bg-color); padding: 1rem; border-radius: 0.5rem; border-left: 3px solid var(--primary-color);">
+                <p class="result-message">
                     ${resultText}
                 </p>
             `;
@@ -353,15 +353,51 @@ class UIController {
 
     // Handle load game
     handleLoad() {
-        if (confirm('Load saved game? Current progress will be lost if not saved.')) {
-            const success = this.gameEngine.loadGame();
-            if (success) {
-                this.render();
-                this.showNotification('Game loaded successfully!');
-            } else {
-                this.showError('No saved game found');
+        this.showConfirm(
+            'Load saved game? Current progress will be lost if not saved.',
+            () => {
+                const success = this.gameEngine.loadGame();
+                if (success) {
+                    this.render();
+                    this.showNotification('Game loaded successfully!');
+                } else {
+                    this.showError('No saved game found');
+                }
             }
-        }
+        );
+    }
+
+    // Show confirmation dialog
+    showConfirm(message, onConfirm) {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal show';
+        overlay.innerHTML = `
+            <div class="modal-content" style="max-width: 400px;">
+                <h3 style="margin-bottom: 1rem;">Confirm</h3>
+                <p style="margin-bottom: 1.5rem;">${message}</p>
+                <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+                    <button class="btn btn-secondary" id="confirmCancel">Cancel</button>
+                    <button class="btn btn-primary" id="confirmOk">OK</button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(overlay);
+        
+        document.getElementById('confirmOk').addEventListener('click', () => {
+            document.body.removeChild(overlay);
+            onConfirm();
+        });
+        
+        document.getElementById('confirmCancel').addEventListener('click', () => {
+            document.body.removeChild(overlay);
+        });
+        
+        overlay.addEventListener('click', (e) => {
+            if (e.target === overlay) {
+                document.body.removeChild(overlay);
+            }
+        });
     }
 
     // Handle restart
