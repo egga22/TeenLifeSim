@@ -217,7 +217,12 @@ const UI = {
     // Advance time
     advanceTime: function() {
         const oldPeriod = Game.state.time.period;
-        const wasSchoolDay = Game.isSchoolDay();
+        
+        // Check if grounded and trying to end the day without doing chores
+        if (Game.isGrounded() && oldPeriod === 'night' && !Game.state.school.didMandatoryChores) {
+            this.showNotification('Chores Required!', 'You\'re grounded and must do your chores before going to sleep!');
+            return;
+        }
         
         Game.advanceTime();
         const newPeriod = Game.state.time.period;
@@ -242,7 +247,7 @@ const UI = {
         
         // Check for mandatory chores when grounded
         if (Game.isGrounded() && newPeriod === 'morning') {
-            this.addEventLog(`You're grounded! ${Game.state.school.groundedDaysLeft} days left. You must do chores today.`, 'warning');
+            this.addEventLog(`You're grounded! ${Game.state.school.groundedDaysLeft} days left. You must do chores before bed.`, 'warning');
         }
         
         this.addEventLog(`Time advanced to ${this.capitalizeFirst(newPeriod)}.`, 'success');

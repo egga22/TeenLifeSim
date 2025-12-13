@@ -46,7 +46,8 @@ const Activities = {
                 money: 10,
                 happiness: -3
             },
-            availableWhen: ['morning', 'afternoon', 'evening']
+            availableWhen: ['morning', 'afternoon', 'evening'],
+            isMandatoryChore: true
         },
         
         // Social Activities
@@ -166,8 +167,8 @@ const Activities = {
             description: 'Take a nap or relax',
             actionCost: 1,
             effects: {
-                health: 5,
-                happiness: 2
+                health: 10,
+                happiness: 5
             },
             availableWhen: ['afternoon', 'evening']
         },
@@ -276,6 +277,11 @@ const Activities = {
         // Apply effects
         for (const [stat, value] of Object.entries(activity.effects)) {
             Game.modifyStat(stat, value);
+        }
+        
+        // Track mandatory chores completion
+        if (activity.isMandatoryChore) {
+            Game.state.school.didMandatoryChores = true;
         }
         
         // Apply to education if it's a study activity

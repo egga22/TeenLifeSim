@@ -49,7 +49,8 @@ const Game = {
             saturdayDetention: false,
             grounded: false,
             groundedDaysLeft: 0,
-            noAllowanceDaysLeft: 0
+            noAllowanceDaysLeft: 0,
+            didMandatoryChores: false
         },
         
         // Inventory
@@ -96,7 +97,8 @@ const Game = {
             saturdayDetention: false,
             grounded: false,
             groundedDaysLeft: 0,
-            noAllowanceDaysLeft: 0
+            noAllowanceDaysLeft: 0,
+            didMandatoryChores: false
         };
     },
     
@@ -267,6 +269,7 @@ const Game = {
         // Reset school status for new day
         this.state.school.wentToSchool = false;
         this.state.school.skippedToday = false;
+        this.state.school.didMandatoryChores = false;
         
         // Decrement grounded days
         if (this.state.school.groundedDaysLeft > 0) {
@@ -332,7 +335,8 @@ const Game = {
     // Get day name (dayOfWeek: 1=Monday, 2=Tuesday, ..., 6=Saturday, 7=Sunday)
     getDayName: function() {
         const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-        return days[(this.state.time.dayOfWeek - 1) % 7];
+        const index = Math.max(0, Math.min(6, (this.state.time.dayOfWeek - 1)));
+        return days[index];
     },
     
     // Get month name
