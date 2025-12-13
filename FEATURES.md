@@ -3,9 +3,9 @@
 ## 🎮 Gameplay Features
 
 ### Character Management
-- **Age Progression**: Start at 13, play until 18
-- **6 Core Stats**: Health, Energy, Happiness, Intelligence, Social, Fitness
-- **Money System**: Earn and spend money on activities and items
+- **Age Progression**: Start at 15, play until 18
+- **6 Core Stats**: Health, Happiness, Intelligence, Popularity, Fitness, Money
+- **Actions System**: 3 actions per day if attending school, 8 if skipping or weekend
 - **Character Customization**: Name and gender selection
 
 ### Time System
@@ -20,7 +20,7 @@
 #### Academic Activities
 - Study Math, Science, English
 - Improves intelligence and grades
-- Energy cost varies by activity
+- Each activity costs 1 action
 
 #### Social Activities
 - Hang out with friends
@@ -46,8 +46,8 @@
 - Create art
 
 #### Self-Care
-- Rest to recover energy
-- Sleep to advance day
+- Rest to recover health
+- Sleep to advance day (free, costs 0 actions)
 - Health management
 
 ### Education System
@@ -178,8 +178,8 @@
 ## 🎯 Game Mechanics
 
 ### Stat Balancing
-- **Energy Management**: Activities cost energy, sleep restores it
-- **Health Effects**: Low energy damages health
+- **Actions Management**: Activities cost actions, which reset daily (3 or 8 depending on school choice)
+- **School Decision**: Choose daily to attend school (3 actions, safer) or skip (8 actions, risky)
 - **Happiness Decay**: Must maintain through positive activities
 - **Stat Caps**: Most stats capped at 0-100 (money unlimited)
 
@@ -190,9 +190,10 @@
 - **School Days**: Automatic attendance on weekdays
 
 ### Risk vs. Reward
+- **School vs. Skip**: Attend school for safety (3 actions) or skip for more actions (8) with risks
+- **Skip Consequences**: 50% safe, 25% Saturday detention, 25% grounded for a week
 - **Study vs. Fun**: Balance grades with happiness
-- **Work vs. Play**: Money vs. social life
-- **Energy Management**: Push through or rest
+- **Work vs. Play**: Money vs. popularity
 - **Event Choices**: Multiple paths with different outcomes
 
 ### Progression Systems
@@ -226,7 +227,7 @@
 - **Relationships**: 6+ characters
 - **Subjects**: 6 academic subjects
 - **Time Periods**: 4 per day
-- **Age Range**: 13-18 years (6 years of gameplay)
+- **Age Range**: 15-18 years (4 years of gameplay)
 
 ## 🎓 Educational Value
 

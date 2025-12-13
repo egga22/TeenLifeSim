@@ -191,14 +191,14 @@ const Education = {
             choices: [
                 {
                     text: 'Complete it carefully',
-                    effects: { energy: -15, intelligence: 3 },
+                    effects: { intelligence: 3 },
                     callback: () => {
                         this.completeAssignment(subject, 'high');
                     }
                 },
                 {
                     text: 'Rush through it',
-                    effects: { energy: -8, intelligence: 1 },
+                    effects: { intelligence: 1 },
                     callback: () => {
                         this.completeAssignment(subject, 'medium');
                     }

@@ -1,13 +1,15 @@
 # Teen Life Simulator - Beta Build
 
-A comprehensive teenage life simulation video game built with HTML, CSS, and vanilla JavaScript. Navigate the challenges and opportunities of teenage years from age 13 to 18.
+A comprehensive teenage life simulation video game built with HTML, CSS, and vanilla JavaScript. Navigate the challenges and opportunities of teenage years from age 15 to 18.
 
 ## Features
 
 ### Core Systems
 
-- **Character Stats Management**: Track health, energy, happiness, intelligence, social skills, fitness, and money
+- **Character Stats Management**: Track health, happiness, intelligence, popularity, fitness, and money
+- **Actions System**: Each day you have actions to spend - 3 if you attend school, 8 if you skip or it's the weekend
 - **Time Management System**: Progress through morning, afternoon, evening, and night periods with realistic day/week cycles
+- **School Decision System**: Choose daily whether to attend school (3 actions) or skip (8 actions with risks)
 - **Save/Load System**: Persistent game saves using localStorage
 - **Dynamic Event System**: Random events, school events, relationship events, and health events
 - **Activity System**: 20+ unique activities including studying, socializing, sports, work, and leisure
@@ -51,20 +53,23 @@ A comprehensive teenage life simulation video game built with HTML, CSS, and van
 4. Click "Start New Game"
 
 ### Gameplay
-1. **Check Your Stats**: Monitor health, energy, happiness, intelligence, social, fitness, money, and grades
-2. **Choose Activities**: Click on available activities to perform them (costs energy)
-3. **Advance Time**: Click "Advance Time" to progress to the next period
-4. **Handle Events**: Make choices during random events that affect your stats and relationships
-5. **Save Progress**: Click "Save Game" to save your progress
-6. **Manage Resources**: Balance energy, health, and other stats while pursuing your goals
+1. **Make School Decisions**: Each school day, choose to attend (3 actions) or skip (8 actions, but risky!)
+2. **Check Your Stats**: Monitor health, happiness, intelligence, popularity, fitness, money, and grades
+3. **Choose Activities**: Click on available activities to perform them (costs actions)
+4. **Advance Time**: Click "Advance Time" to progress to the next period
+5. **Handle Events**: Make choices during random events that affect your stats and relationships
+6. **Save Progress**: Click "Save Game" to save your progress
+7. **Manage Resources**: Balance your actions wisely between school, fun, and responsibilities
 
 ### Tips for Success
-- Keep energy above 20 to avoid health penalties
+- **Attending school** is safer and improves grades, but gives fewer actions (3 per day)
+- **Skipping school** gives more actions (8) but has consequences: 50% safe, 25% Saturday detention, 25% grounded
+- Being **grounded** lasts 7 days - no allowance and must do mandatory chores daily
 - Study regularly to maintain good grades
+- Build **popularity** to unlock social opportunities
 - Maintain relationships through positive interactions
 - Balance fun activities with responsibilities
 - Save money for special opportunities
-- Get enough sleep to restore energy
 
 ## File Structure
 
@@ -93,7 +98,7 @@ Edit `js/activities.js` and add to the `definitions` object:
 your_activity: {
     name: 'Activity Name',
     description: 'Description',
-    energyCost: 10,
+    actionCost: 1,
     effects: {
         stat_name: value_change
     },

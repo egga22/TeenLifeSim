@@ -54,8 +54,13 @@ const UI = {
         this.addEventLog('Welcome to your teenage years! Make the most of it!', 'success');
         this.updateActivities();
         
-        // Check for initial events
-        this.checkAndShowEvents();
+        // Check if it's a school day and show school decision
+        if (Game.isSchoolDay() && !Game.state.actions.attendedSchool && !Game.state.actions.skippedSchool) {
+            this.showSchoolDecisionModal();
+        } else {
+            // Check for initial events
+            this.checkAndShowEvents();
+        }
     },
     
     // Load game
@@ -110,20 +115,22 @@ const UI = {
         
         // Update stat bars
         this.updateStatBar('health', stats.health);
-        this.updateStatBar('energy', stats.energy);
         this.updateStatBar('happiness', stats.happiness);
         this.updateStatBar('intelligence', stats.intelligence);
-        this.updateStatBar('social', stats.social);
+        this.updateStatBar('popularity', stats.popularity);
         this.updateStatBar('fitness', stats.fitness);
         
         // Update values
         document.getElementById('health-value').textContent = Math.round(stats.health);
-        document.getElementById('energy-value').textContent = Math.round(stats.energy);
         document.getElementById('happiness-value').textContent = Math.round(stats.happiness);
         document.getElementById('intelligence-value').textContent = Math.round(stats.intelligence);
-        document.getElementById('social-value').textContent = Math.round(stats.social);
+        document.getElementById('popularity-value').textContent = Math.round(stats.popularity);
         document.getElementById('fitness-value').textContent = Math.round(stats.fitness);
         document.getElementById('money-value').textContent = `$${Math.round(stats.money)}`;
+        
+        // Update actions
+        document.getElementById('actions-value').textContent = 
+            `${Game.state.actions.available}/${Game.state.actions.max}`;
         
         // Update grade
         const gradeAverage = Education.state.gradeAverage;
@@ -156,7 +163,7 @@ const UI = {
             activityDiv.innerHTML = `
                 <h4>${activity.name}</h4>
                 <p>${activity.description}</p>
-                <span class="activity-cost">Energy: ${activity.energyCost}</span>
+                <span class="activity-cost">Actions: ${activity.actionCost}</span>
                 ${this.getActivityEffectsHTML(activity.effects)}
             `;
             
@@ -202,10 +209,23 @@ const UI = {
         Game.advanceTime();
         const newPeriod = Game.state.time.period;
         
-        // Attend school if it's a school day during school hours
-        if (Game.isSchoolDay() && (newPeriod === 'morning' || newPeriod === 'afternoon')) {
-            Education.attendSchool();
-            this.addEventLog('You attended school.', 'success');
+        // If new day started, check for school decision
+        if (newPeriod === 'morning' && Game.isSchoolDay() && 
+            !Game.state.actions.attendedSchool && !Game.state.actions.skippedSchool) {
+            this.showSchoolDecisionModal();
+            return; // Don't continue until decision is made
+        }
+        
+        // Check for Saturday detention
+        if (newPeriod === 'morning' && Game.state.time.dayOfWeek === 6 && 
+            Game.state.saturdayDetention.hasDetention) {
+            this.addEventLog('You have to attend Saturday detention today (no actions available).', 'warning');
+            Game.state.saturdayDetention.hasDetention = false;
+        }
+        
+        // Check for grounding status
+        if (Game.state.grounding.isGrounded && newPeriod === 'morning') {
+            this.addEventLog(`You are grounded (${Game.state.grounding.daysRemaining} days remaining). You must complete chores each day.`, 'warning');
         }
         
         this.addEventLog(`Time advanced to ${this.capitalizeFirst(newPeriod)}.`, 'success');
@@ -464,6 +484,50 @@ const UI = {
         
         buttonsEl.appendChild(confirmBtn);
         buttonsEl.appendChild(cancelBtn);
+        modal.classList.add('active');
+    },
+    
+    // Show school decision modal
+    showSchoolDecisionModal: function() {
+        const modal = document.getElementById('general-modal');
+        const titleEl = document.getElementById('general-modal-title');
+        const textEl = document.getElementById('general-modal-text');
+        const buttonsEl = document.getElementById('general-modal-buttons');
+        
+        titleEl.textContent = 'School Day';
+        textEl.innerHTML = 'It\'s a school day. What do you want to do?<br><br>' +
+            '<strong>Attend School:</strong> 3 actions available<br>' +
+            '<strong>Skip School:</strong> 8 actions available<br>' +
+            '⚠️ Risk: 50% safe, 25% Saturday detention, 25% grounded (7 days)';
+        buttonsEl.innerHTML = '';
+        
+        const attendBtn = document.createElement('button');
+        attendBtn.className = 'choice-btn';
+        attendBtn.textContent = 'Attend School';
+        attendBtn.addEventListener('click', () => {
+            const result = Game.attendSchool();
+            Education.attendSchool();
+            this.addEventLog(result.message, 'success');
+            modal.classList.remove('active');
+            this.updateUI();
+            this.updateActivities();
+        });
+        
+        const skipBtn = document.createElement('button');
+        skipBtn.className = 'choice-btn';
+        skipBtn.textContent = 'Skip School';
+        skipBtn.addEventListener('click', () => {
+            const result = Game.skipSchool();
+            Education.missSchool();
+            this.addEventLog(result.consequence.message, 
+                result.consequence.type === 'safe' ? 'success' : 'warning');
+            modal.classList.remove('active');
+            this.updateUI();
+            this.updateActivities();
+        });
+        
+        buttonsEl.appendChild(attendBtn);
+        buttonsEl.appendChild(skipBtn);
         modal.classList.add('active');
     }
 };
