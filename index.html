@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Life Sim - Beta</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Start Screen -->
+        <div id="start-screen" class="screen active">
+            <h1>Teen Life Simulator</h1>
+            <p>Navigate the challenges and opportunities of teenage life</p>
+            <div class="form-group">
+                <label for="player-name">Enter Your Name:</label>
+                <input type="text" id="player-name" placeholder="Your Name" maxlength="20">
+            </div>
+            <div class="form-group">
+                <label>Choose Your Gender:</label>
+                <select id="player-gender">
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="non-binary">Non-Binary</option>
+                </select>
+            </div>
+            <button id="start-game" class="btn btn-primary">Start New Game</button>
+            <button id="load-game" class="btn btn-secondary">Load Game</button>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="game-screen" class="screen">
+            <!-- Header -->
+            <header class="game-header">
+                <div class="player-info">
+                    <h2 id="player-display-name">Player</h2>
+                    <p id="age-display">Age: 13</p>
+                </div>
+                <div class="time-info">
+                    <p id="date-display">Monday, September 1</p>
+                    <p id="time-display">Morning</p>
+                </div>
+            </header>
+
+            <!-- Stats Panel -->
+            <div class="stats-panel">
+                <div class="stat-group">
+                    <div class="stat">
+                        <label>Health</label>
+                        <div class="stat-bar">
+                            <div id="health-bar" class="stat-fill health"></div>
+                        </div>
+                        <span id="health-value">100</span>
+                    </div>
+                    <div class="stat">
+                        <label>Energy</label>
+                        <div class="stat-bar">
+                            <div id="energy-bar" class="stat-fill energy"></div>
+                        </div>
+                        <span id="energy-value">100</span>
+                    </div>
+                    <div class="stat">
+                        <label>Happiness</label>
+                        <div class="stat-bar">
+                            <div id="happiness-bar" class="stat-fill happiness"></div>
+                        </div>
+                        <span id="happiness-value">100</span>
+                    </div>
+                    <div class="stat">
+                        <label>Intelligence</label>
+                        <div class="stat-bar">
+                            <div id="intelligence-bar" class="stat-fill intelligence"></div>
+                        </div>
+                        <span id="intelligence-value">50</span>
+                    </div>
+                </div>
+                <div class="stat-group">
+                    <div class="stat">
+                        <label>Social</label>
+                        <div class="stat-bar">
+                            <div id="social-bar" class="stat-fill social"></div>
+                        </div>
+                        <span id="social-value">50</span>
+                    </div>
+                    <div class="stat">
+                        <label>Fitness</label>
+                        <div class="stat-bar">
+                            <div id="fitness-bar" class="stat-fill fitness"></div>
+                        </div>
+                        <span id="fitness-value">50</span>
+                    </div>
+                    <div class="stat">
+                        <label>Money</label>
+                        <span id="money-value" class="money-display">$0</span>
+                    </div>
+                    <div class="stat">
+                        <label>Grade Average</label>
+                        <span id="grade-value" class="grade-display">C (70%)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="content-container">
+                <!-- Activity Panel -->
+                <div class="activity-panel">
+                    <h3>Activities</h3>
+                    <div id="activities-list" class="activities-list"></div>
+                </div>
+
+                <!-- Event/Log Panel -->
+                <div class="event-panel">
+                    <h3>Events</h3>
+                    <div id="event-log" class="event-log"></div>
+                    <div id="event-choices" class="event-choices"></div>
+                </div>
+
+                <!-- Info Panel -->
+                <div class="info-panel">
+                    <div class="tab-buttons">
+                        <button class="tab-btn active" data-tab="relationships">Relationships</button>
+                        <button class="tab-btn" data-tab="education">Education</button>
+                        <button class="tab-btn" data-tab="inventory">Inventory</button>
+                    </div>
+                    
+                    <div id="relationships-tab" class="tab-content active">
+                        <div id="relationships-list"></div>
+                    </div>
+                    
+                    <div id="education-tab" class="tab-content">
+                        <div id="education-info"></div>
+                    </div>
+                    
+                    <div id="inventory-tab" class="tab-content">
+                        <div id="inventory-list"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Control Panel -->
+            <div class="control-panel">
+                <button id="save-game-btn" class="btn btn-secondary">Save Game</button>
+                <button id="advance-time-btn" class="btn btn-primary">Advance Time</button>
+                <button id="menu-btn" class="btn btn-secondary">Menu</button>
+            </div>
+        </div>
+
+        <!-- Modal for Events -->
+        <div id="event-modal" class="modal">
+            <div class="modal-content">
+                <h3 id="modal-title">Event</h3>
+                <p id="modal-text"></p>
+                <div id="modal-choices" class="modal-choices"></div>
+            </div>
+        </div>
+
+        <!-- General Purpose Modal -->
+        <div id="general-modal" class="modal">
+            <div class="modal-content">
+                <h3 id="general-modal-title">Notice</h3>
+                <p id="general-modal-text"></p>
+                <div id="general-modal-buttons" class="modal-choices"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Files -->
+    <script src="js/game.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/activities.js"></script>
+    <script src="js/relationships.js"></script>
+    <script src="js/education.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
