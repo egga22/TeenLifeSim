@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teen Life Simulator</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="game-header">
+            <h1>Teen Life Simulator</h1>
+            <div class="header-controls">
+                <button id="settingsBtn" class="icon-btn" title="Settings">⚙️</button>
+                <button id="saveBtn" class="icon-btn" title="Save Game">💾</button>
+                <button id="loadBtn" class="icon-btn" title="Load Game">📂</button>
+            </div>
+        </header>
+
+        <!-- Main Game Area -->
+        <main class="game-container">
+            <!-- Character Info Panel -->
+            <aside class="character-panel">
+                <div class="character-avatar" id="characterAvatar">
+                    <div class="avatar-placeholder">👤</div>
+                </div>
+                <h2 id="characterName">Alex</h2>
+                <div class="character-info">
+                    <p><strong>Age:</strong> <span id="characterAge">13</span></p>
+                    <p><strong>Grade:</strong> <span id="characterGrade">8th</span></p>
+                </div>
+                
+                <!-- Stats -->
+                <div class="stats-container">
+                    <h3>Stats</h3>
+                    <div class="stat-item">
+                        <label>Happiness</label>
+                        <div class="stat-bar">
+                            <div class="stat-fill happiness" id="happinessStat" style="width: 70%"></div>
+                        </div>
+                        <span class="stat-value" id="happinessValue">70</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Health</label>
+                        <div class="stat-bar">
+                            <div class="stat-fill health" id="healthStat" style="width: 80%"></div>
+                        </div>
+                        <span class="stat-value" id="healthValue">80</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Intelligence</label>
+                        <div class="stat-bar">
+                            <div class="stat-fill intelligence" id="intelligenceStat" style="width: 60%"></div>
+                        </div>
+                        <span class="stat-value" id="intelligenceValue">60</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Social</label>
+                        <div class="stat-bar">
+                            <div class="stat-fill social" id="socialStat" style="width: 65%"></div>
+                        </div>
+                        <span class="stat-value" id="socialValue">65</span>
+                    </div>
+                    <div class="stat-item">
+                        <label>Energy</label>
+                        <div class="stat-bar">
+                            <div class="stat-fill energy" id="energyStat" style="width: 75%"></div>
+                        </div>
+                        <span class="stat-value" id="energyValue">75</span>
+                    </div>
+                </div>
+
+                <!-- Relationships -->
+                <div class="relationships-container">
+                    <h3>Relationships</h3>
+                    <div id="relationshipsList" class="relationships-list">
+                        <!-- Dynamic content -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <section class="main-content">
+                <!-- Timeline -->
+                <div class="timeline">
+                    <div class="timeline-info">
+                        <span id="currentDate">Day 1, Week 1, Year 1</span>
+                        <span id="currentSeason">Fall</span>
+                    </div>
+                    <button id="nextDayBtn" class="btn btn-primary">Next Day ⏩</button>
+                </div>
+
+                <!-- Event Display -->
+                <div class="event-container" id="eventContainer">
+                    <h2 class="event-title" id="eventTitle">Welcome to Teen Life!</h2>
+                    <div class="event-description" id="eventDescription">
+                        <p>You're starting 8th grade! Life is full of possibilities. Make choices, build relationships, and navigate the ups and downs of teenage years.</p>
+                    </div>
+                    <div class="event-image" id="eventImage">
+                        <!-- Optional event image or emoji -->
+                    </div>
+                </div>
+
+                <!-- Choices/Actions -->
+                <div class="choices-container" id="choicesContainer">
+                    <h3>What do you want to do?</h3>
+                    <div class="choices-grid" id="choicesGrid">
+                        <!-- Dynamic choices will be inserted here -->
+                    </div>
+                </div>
+
+                <!-- Activity Log -->
+                <div class="activity-log" id="activityLog">
+                    <h3>Recent Events</h3>
+                    <div class="log-entries" id="logEntries">
+                        <!-- Log entries will appear here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Modal for Settings -->
+        <div id="settingsModal" class="modal">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <h2>Settings</h2>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="apiKeyInput">Gemini API Key:</label>
+                        <input type="password" id="apiKeyInput" placeholder="Enter your Gemini API key">
+                        <small>Your API key is stored locally and never sent anywhere except to Google's Gemini API.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="characterNameInput">Character Name:</label>
+                        <input type="text" id="characterNameInput" placeholder="Enter character name">
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="aiEventsToggle">
+                            Use AI-Generated Events (requires API key)
+                        </label>
+                    </div>
+                    <button id="saveSettingsBtn" class="btn btn-primary">Save Settings</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for Game Over -->
+        <div id="gameOverModal" class="modal">
+            <div class="modal-content">
+                <h2>Game Over</h2>
+                <div id="gameOverContent">
+                    <!-- Game over message -->
+                </div>
+                <button id="restartBtn" class="btn btn-primary">Start New Game</button>
+            </div>
+        </div>
+
+        <!-- Loading Indicator -->
+        <div id="loadingIndicator" class="loading-indicator" style="display: none;">
+            <div class="spinner"></div>
+            <p>Generating event...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/config.js"></script>
+    <script src="js/stateManager.js"></script>
+    <script src="js/character.js"></script>
+    <script src="js/events.js"></script>
+    <script src="js/geminiAPI.js"></script>
+    <script src="js/gameEngine.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>
