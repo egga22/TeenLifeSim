@@ -170,8 +170,8 @@ const Game = {
         this.state.time.periodsInDay = 0;
         this.state.progress.daysPlayed++;
         
-        // Advance day of week
-        this.state.time.dayOfWeek = (this.state.time.dayOfWeek % 7) + 1;
+        // Advance day of week (0=Sunday, 1=Monday, ..., 6=Saturday)
+        this.state.time.dayOfWeek = (this.state.time.dayOfWeek + 1) % 7;
         
         // Advance calendar day
         this.state.time.day++;

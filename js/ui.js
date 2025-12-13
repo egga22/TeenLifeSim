@@ -54,8 +54,13 @@ const UI = {
         this.addEventLog('Welcome to your teenage years! Make the most of it!', 'success');
         this.updateActivities();
         
-        // Check for initial events
-        this.checkAndShowEvents();
+        // Check if it's a school day and show school decision
+        if (Game.isSchoolDay() && !Game.state.actions.attendedSchool && !Game.state.actions.skippedSchool) {
+            this.showSchoolDecisionModal();
+        } else {
+            // Check for initial events
+            this.checkAndShowEvents();
+        }
     },
     
     // Load game
