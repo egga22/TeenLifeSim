@@ -406,12 +406,31 @@ class UIController {
 
     // Show notification
     showNotification(message) {
-        // Simple notification - could be enhanced
-        alert(message);
+        this.showToast(message, 'success');
     }
 
     // Show error
     showError(message) {
-        alert('Error: ' + message);
+        this.showToast(message, 'error');
+    }
+
+    // Show toast notification
+    showToast(message, type = 'success') {
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.textContent = message;
+        
+        // Add to body
+        document.body.appendChild(toast);
+        
+        // Trigger animation
+        setTimeout(() => toast.classList.add('show'), 10);
+        
+        // Remove after 3 seconds
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => document.body.removeChild(toast), 300);
+        }, 3000);
     }
 }

@@ -121,7 +121,8 @@ class StateManager {
         const time = { ...this.state.time };
         time.day++;
         time.totalDays++;
-        time.dayOfWeek = (time.dayOfWeek % 7) + 1;
+        // Cycle through 1-7 for days of week (1=Monday, 7=Sunday)
+        time.dayOfWeek = time.dayOfWeek === 7 ? 1 : time.dayOfWeek + 1;
 
         // Week progression
         if (time.day > CONFIG.daysInWeek) {
