@@ -7,16 +7,14 @@ const Shop = {
             description: 'Some delicious treats to boost your mood',
             price: 5,
             effects: {
-                happiness: 5,
-                health: -2
+                happiness: 5
             }
         },
         energy_drink: {
             name: 'Energy Drink',
-            description: 'Stay alert and energized (not healthy though)',
+            description: 'Stay alert and energized',
             price: 8,
             effects: {
-                health: -5,
                 happiness: 3
             }
         },

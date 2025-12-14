@@ -55,7 +55,7 @@ const UI = {
         this.updateActivities();
         
         // Check if starting on a school day
-        if (Game.isSchoolDay() && Game.state.time.period === 'morning') {
+        if (Game.isSchoolDay()) {
             this.showSchoolChoice();
         } else {
             // Weekend - set 8 actions
@@ -107,8 +107,9 @@ const UI = {
         document.getElementById('age-display').textContent = `Age: ${Game.state.player.age}`;
         document.getElementById('date-display').textContent = 
             `${Game.getDayName()}, ${Game.getMonthName()} ${Game.state.time.day}`;
-        document.getElementById('time-display').textContent = 
-            this.capitalizeFirst(Game.state.time.period);
+        // Time display now shows day type instead of period
+        const dayType = Game.isWeekend() ? 'Weekend' : 'School Day';
+        document.getElementById('time-display').textContent = dayType;
     },
     
     // Update stats display
@@ -117,7 +118,6 @@ const UI = {
         const actions = Game.state.actions;
         
         // Update stat bars
-        this.updateStatBar('health', stats.health);
         this.updateStatBar('actions', (actions.current / actions.max) * 100);
         this.updateStatBar('happiness', stats.happiness);
         this.updateStatBar('intelligence', stats.intelligence);
@@ -125,7 +125,6 @@ const UI = {
         this.updateStatBar('fitness', stats.fitness);
         
         // Update values
-        document.getElementById('health-value').textContent = Math.round(stats.health);
         document.getElementById('actions-value').textContent = `${actions.current}/${actions.max}`;
         document.getElementById('happiness-value').textContent = Math.round(stats.happiness);
         document.getElementById('intelligence-value').textContent = Math.round(stats.intelligence);
@@ -206,6 +205,25 @@ const UI = {
         const result = Activities.performActivity(activityId);
         
         if (result.success) {
+            // Check if we need to launch a minigame
+            if (result.launchMinigame) {
+                Chores.startMinigame(result.choreType, (completed) => {
+                    if (completed) {
+                        // Use the action only after completing the chore
+                        Game.useAction(1);
+                        // Earning chores give money
+                        Game.modifyStat('money', 10);
+                        Game.modifyStat('happiness', -3);
+                        this.addEventLog('You completed your chores and earned $10! -3 happiness', 'success');
+                    } else {
+                        this.addEventLog('You gave up on the chores.', 'warning');
+                    }
+                    this.updateUI();
+                    this.updateActivities();
+                });
+                return;
+            }
+            
             this.addEventLog(result.message, 'success');
             
             // Check for tier change notification
@@ -221,43 +239,44 @@ const UI = {
         }
     },
     
-    // Advance time
+    // Advance time (now advances to next day)
     advanceTime: function() {
-        const oldPeriod = Game.state.time.period;
-        
         // Check if grounded and trying to end the day without doing chores
-        if (Game.isGrounded() && oldPeriod === 'night' && !Game.state.school.didMandatoryChores) {
-            this.showNotification('Chores Required!', 'You\'re grounded and must do your chores before going to sleep!');
+        if (Game.isGrounded() && !Game.state.school.didMandatoryChores) {
+            // Force the punishment chore minigame instead of blocking
+            Chores.startMinigame('punishment', () => {
+                Game.state.school.didMandatoryChores = true;
+                this.addEventLog('You finished your punishment chores.', 'warning');
+                this.updateUI();
+                this.updateActivities();
+            });
             return;
         }
         
         Game.advanceTime();
-        const newPeriod = Game.state.time.period;
         
-        // Check if it's a new day and a school day - show school choice
-        if (newPeriod === 'morning' && oldPeriod === 'night') {
-            if (Game.isSchoolDay()) {
-                this.showSchoolChoice();
-                return; // Don't proceed until player makes choice
-            } else {
-                // Weekend - set 8 actions
-                Game.setDailyActions(false);
-                this.addEventLog('It\'s the weekend! You have 8 actions today.', 'success');
-            }
+        // Check if it's a school day - show school choice
+        if (Game.isSchoolDay()) {
+            this.showSchoolChoice();
+            return; // Don't proceed until player makes choice
+        } else {
+            // Weekend - set 8 actions
+            Game.setDailyActions(false);
+            this.addEventLog('It\'s the weekend! You have 8 actions today.', 'success');
         }
         
         // Check for Saturday detention
-        if (Game.state.school.saturdayDetention && Game.state.time.dayOfWeek === 6 && newPeriod === 'morning') {
+        if (Game.state.school.saturdayDetention && Game.state.time.dayOfWeek === 6) {
             this.showSaturdayDetention();
             return;
         }
         
-        // Check for mandatory chores when grounded
-        if (Game.isGrounded() && newPeriod === 'morning') {
-            this.addEventLog(`You're grounded! ${Game.state.school.groundedDaysLeft} days left. You must do chores before bed.`, 'warning');
+        // Check for mandatory chores when grounded (will be auto-triggered after school)
+        if (Game.isGrounded()) {
+            this.addEventLog(`You're grounded! ${Game.state.school.groundedDaysLeft} days left. You must do chores before the day ends.`, 'warning');
         }
         
-        this.addEventLog(`Time advanced to ${this.capitalizeFirst(newPeriod)}.`, 'success');
+        this.addEventLog(`It's ${Game.getDayName()}, ${Game.getMonthName()} ${Game.state.time.day}.`, 'success');
         
         this.updateUI();
         this.updateActivities();
@@ -312,6 +331,19 @@ const UI = {
             tierChange = Education.attendSchool();
             const actions = Game.state.actions.current;
             this.addEventLog(`You went to school. You have ${actions} actions for the rest of the day.`, 'success');
+            
+            // If grounded, auto-trigger punishment chores after school
+            if (Game.isGrounded()) {
+                this.addEventLog(`You're grounded! Time to do your punishment chores.`, 'warning');
+                Chores.startMinigame('punishment', () => {
+                    Game.state.school.didMandatoryChores = true;
+                    this.addEventLog('You finished your punishment chores. No pay.', 'warning');
+                    this.updateUI();
+                    this.updateActivities();
+                    this.checkAndShowEvents();
+                });
+                return; // Don't proceed until chores are done
+            }
         } else {
             Game.state.school.skippedToday = true;
             tierChange = Education.missSchool();
@@ -328,6 +360,17 @@ const UI = {
             } else {
                 this.addEventLog(result.message, 'danger');
                 this.addEventLog('You have 8 actions today, but you\'re grounded!', 'danger');
+                
+                // If just got grounded, start punishment chores immediately
+                this.addEventLog(`Time to do your punishment chores.`, 'warning');
+                Chores.startMinigame('punishment', () => {
+                    Game.state.school.didMandatoryChores = true;
+                    this.addEventLog('You finished your punishment chores. No pay.', 'warning');
+                    this.updateUI();
+                    this.updateActivities();
+                    this.checkAndShowEvents();
+                });
+                return;
             }
         }
         

@@ -10,7 +10,7 @@ const Storage = {
                 education: Education.getState(),
                 relationships: Relationships.getState(),
                 timestamp: Date.now(),
-                version: 2 // Version for new actions system
+                version: 3 // Version for removed health and time periods
             };
             
             localStorage.setItem(this.SAVE_KEY, JSON.stringify(saveData));
@@ -33,7 +33,7 @@ const Storage = {
             const data = JSON.parse(saveData);
             
             // Check for old save format and migrate if needed
-            if (!data.version || data.version < 2) {
+            if (!data.version || data.version < 3) {
                 // Old save - clear it and return null
                 this.deleteSave();
                 return null;
