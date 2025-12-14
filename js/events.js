@@ -333,7 +333,8 @@ const Events = {
             if (result && result.message) {
                 return {
                     success: true,
-                    message: result.message
+                    message: result.message,
+                    tierChange: result.tierChange
                 };
             }
         }

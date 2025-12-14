@@ -5,7 +5,8 @@ const Education = {
         gradeAverage: 70,
         attendance: 100,
         exams: [],
-        assignments: []
+        assignments: [],
+        previousTier: null  // Track previous grade tier for notifications
     },
     
     // Subject definitions
@@ -69,8 +70,7 @@ const Education = {
             subjectData.grade = Math.min(100, currentGrade + improvement * 0.5);
         }
         
-        this.updateGradeAverage();
-        return true;
+        return this.updateGradeAverage();
     },
     
     // Attend school day
@@ -83,7 +83,7 @@ const Education = {
             }
         }
         
-        this.updateGradeAverage();
+        return this.updateGradeAverage();
     },
     
     // Miss school day
@@ -97,10 +97,10 @@ const Education = {
             subjectData.grade = Math.max(0, subjectData.grade - 1);
         }
         
-        this.updateGradeAverage();
+        return this.updateGradeAverage();
     },
     
-    // Update overall grade average
+    // Update overall grade average and check for tier changes
     updateGradeAverage: function() {
         let total = 0;
         let count = 0;
@@ -112,6 +112,9 @@ const Education = {
         }
         
         this.state.gradeAverage = count > 0 ? Math.round(total / count) : 0;
+        
+        // Check if tier changed and return notification info
+        return this.checkTierChange();
     },
     
     // Get letter grade from percentage
@@ -121,6 +124,93 @@ const Education = {
         if (percentage >= 70) return 'C';
         if (percentage >= 60) return 'D';
         return 'F';
+    },
+    
+    // Get lowest grade among all subjects
+    getLowestGrade: function() {
+        let lowestGrade = 100;
+        
+        for (const subject of this.subjectList) {
+            const subjectData = this.state.subjects[subject];
+            if (subjectData && subjectData.grade < lowestGrade) {
+                lowestGrade = subjectData.grade;
+            }
+        }
+        
+        return lowestGrade;
+    },
+    
+    // Get current grade tier based on lowest grade
+    getCurrentTier: function() {
+        const lowestGrade = this.getLowestGrade();
+        return this.getLetterGrade(lowestGrade);
+    },
+    
+    // Get actions per school day based on grade tier
+    getActionsForGradeTier: function() {
+        const tier = this.getCurrentTier();
+        
+        const actionsMap = {
+            'A': 7,
+            'B': 6,
+            'C': 5,
+            'D': 4,
+            'F': 3
+        };
+        
+        return actionsMap[tier] || 3;
+    },
+    
+    // Get weekly allowance based on grade tier
+    getAllowanceForGradeTier: function() {
+        const tier = this.getCurrentTier();
+        
+        const allowanceMap = {
+            'A': 25,
+            'B': 20,
+            'C': 15,
+            'D': 10,
+            'F': 5
+        };
+        
+        return allowanceMap[tier] || 5;
+    },
+    
+    // Check if tier has changed and return notification message
+    checkTierChange: function() {
+        const currentTier = this.getCurrentTier();
+        const previousTier = this.state.previousTier;
+        
+        // Initialize previous tier on first check
+        if (previousTier === null) {
+            this.state.previousTier = currentTier;
+            return null;
+        }
+        
+        // Check if tier changed
+        if (currentTier !== previousTier) {
+            this.state.previousTier = currentTier;
+            
+            const lowestGrade = this.getLowestGrade();
+            const actions = this.getActionsForGradeTier();
+            const allowance = this.getAllowanceForGradeTier();
+            
+            return {
+                tier: currentTier,
+                lowestGrade: Math.round(lowestGrade),
+                actions: actions,
+                allowance: allowance,
+                improved: this.tierComparison(currentTier, previousTier) > 0
+            };
+        }
+        
+        return null;
+    },
+    
+    // Compare two tiers (returns positive if tier1 is better than tier2)
+    tierComparison: function(tier1, tier2) {
+        const tierValues = { 'A': 5, 'B': 4, 'C': 3, 'D': 2, 'F': 1 };
+        return tierValues[tier1] - tierValues[tier2];
     },
     
     // Generate exam event
@@ -141,7 +231,8 @@ const Education = {
                     effects: { happiness: 5, intelligence: -5 },
                     callback: () => {
                         this.state.subjects[subject].grade = Math.max(0, this.state.subjects[subject].grade - 10);
-                        this.updateGradeAverage();
+                        const tierChange = this.updateGradeAverage();
+                        return { message: 'You skipped the exam.', tierChange: tierChange };
                     }
                 }
             ]
@@ -164,7 +255,7 @@ const Education = {
         // Update grade (exam counts for 30% of grade)
         subjectData.grade = Math.round(subjectData.grade * 0.7 + examScore * 0.3);
         
-        this.updateGradeAverage();
+        const tierChange = this.updateGradeAverage();
         
         // Record exam
         this.state.exams.push({
@@ -177,7 +268,8 @@ const Education = {
         const letterGrade = this.getLetterGrade(examScore);
         return {
             message: `You scored ${Math.round(examScore)}% (${letterGrade}) on the ${subjectData.name} exam!`,
-            score: examScore
+            score: examScore,
+            tierChange: tierChange
         };
     },
     
@@ -193,21 +285,24 @@ const Education = {
                     text: 'Complete it carefully',
                     effects: { energy: -15, intelligence: 3 },
                     callback: () => {
-                        this.completeAssignment(subject, 'high');
+                        const tierChange = this.completeAssignment(subject, 'high');
+                        return { message: 'You carefully completed the assignment.', tierChange: tierChange };
                     }
                 },
                 {
                     text: 'Rush through it',
                     effects: { energy: -8, intelligence: 1 },
                     callback: () => {
-                        this.completeAssignment(subject, 'medium');
+                        const tierChange = this.completeAssignment(subject, 'medium');
+                        return { message: 'You rushed through the assignment.', tierChange: tierChange };
                     }
                 },
                 {
                     text: 'Skip it',
                     effects: { happiness: 5 },
                     callback: () => {
-                        this.completeAssignment(subject, 'none');
+                        const tierChange = this.completeAssignment(subject, 'none');
+                        return { message: 'You skipped the assignment.', tierChange: tierChange };
                     }
                 }
             ]
@@ -233,7 +328,7 @@ const Education = {
         }
         
         subjectData.grade = Math.max(0, Math.min(100, subjectData.grade + gradeChange));
-        this.updateGradeAverage();
+        const tierChange = this.updateGradeAverage();
         
         this.state.assignments.push({
             subject: subject,
@@ -241,6 +336,8 @@ const Education = {
             effort: effort,
             date: Game.state.progress.daysPlayed
         });
+        
+        return tierChange;
     },
     
     // Get all subjects

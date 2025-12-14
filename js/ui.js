@@ -206,6 +206,12 @@ const UI = {
         
         if (result.success) {
             this.addEventLog(result.message, 'success');
+            
+            // Check for tier change notification
+            if (result.tierChange) {
+                this.showTierChangeNotification(result.tierChange);
+            }
+            
             this.updateUI();
             this.updateActivities();
             this.checkAndShowEvents();
@@ -298,12 +304,15 @@ const UI = {
         Game.state.school.wentToSchool = wentToSchool;
         Game.setDailyActions(wentToSchool);
         
+        let tierChange = null;
+        
         if (wentToSchool) {
-            Education.attendSchool();
-            this.addEventLog('You went to school. You have 3 actions for the rest of the day.', 'success');
+            tierChange = Education.attendSchool();
+            const actions = Game.state.actions.current;
+            this.addEventLog(`You went to school. You have ${actions} actions for the rest of the day.`, 'success');
         } else {
             Game.state.school.skippedToday = true;
-            Education.missSchool();
+            tierChange = Education.missSchool();
             
             // Check consequences
             const result = Game.handleSkipSchool();
@@ -318,6 +327,11 @@ const UI = {
                 this.addEventLog(result.message, 'danger');
                 this.addEventLog('You have 8 actions today, but you\'re grounded!', 'danger');
             }
+        }
+        
+        // Check for tier change notification
+        if (tierChange) {
+            this.showTierChangeNotification(tierChange);
         }
         
         this.updateUI();
@@ -376,6 +390,11 @@ const UI = {
         if (result) {
             if (result.success) {
                 this.addEventLog(result.message, 'success');
+                
+                // Check for tier change notification
+                if (result.tierChange) {
+                    this.showTierChangeNotification(result.tierChange);
+                }
             } else {
                 this.addEventLog(result.message, 'warning');
             }
@@ -581,5 +600,22 @@ const UI = {
         buttonsEl.appendChild(confirmBtn);
         buttonsEl.appendChild(cancelBtn);
         modal.classList.add('active');
+    },
+    
+    // Show tier change notification (pushed to top of event log)
+    showTierChangeNotification: function(tierChange) {
+        if (!tierChange) return;
+        
+        let message = '';
+        
+        if (tierChange.improved) {
+            message = `📚 Your grade tier improved to ${tierChange.tier}! (Lowest grade: ${tierChange.lowestGrade}%) ` +
+                     `You now get ${tierChange.actions} actions after school and $${tierChange.allowance} weekly allowance.`;
+            this.addEventLog(message, 'success');
+        } else {
+            message = `📉 Your grade tier dropped to ${tierChange.tier}. (Lowest grade: ${tierChange.lowestGrade}%) ` +
+                     `You now get ${tierChange.actions} actions after school and $${tierChange.allowance} weekly allowance.`;
+            this.addEventLog(message, 'warning');
+        }
     }
 };
