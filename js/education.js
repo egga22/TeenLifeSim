@@ -10,7 +10,7 @@ const Education = {
     },
     
     // Subject definitions
-    subjectList: ['math', 'science', 'english', 'history', 'art', 'physical_education'],
+    subjectList: ['math', 'science', 'english', 'history'],
     
     // Initialize education system
     init: function() {
@@ -38,9 +38,7 @@ const Education = {
             math: 'Mathematics',
             science: 'Science',
             english: 'English',
-            history: 'History',
-            art: 'Art',
-            physical_education: 'Physical Education'
+            history: 'History'
         };
         return names[subject] || subject;
     },

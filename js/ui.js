@@ -97,6 +97,7 @@ const UI = {
         this.updateStats();
         this.updateRelationships();
         this.updateEducation();
+        this.updateShop();
         this.updateInventory();
     },
     
@@ -536,6 +537,73 @@ const UI = {
             
             educationDiv.appendChild(subjectDiv);
         });
+    },
+    
+    // Update shop tab
+    updateShop: function() {
+        const shopDiv = document.getElementById('shop-list');
+        const items = Shop.getAllItems();
+        
+        shopDiv.innerHTML = '';
+        
+        // Add header info
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'shop-header';
+        headerDiv.innerHTML = `
+            <h4>Shop</h4>
+            <p>Your money: $${Math.round(Game.state.stats.money)}</p>
+            <p>Browse items and spend your hard-earned cash!</p>
+            <hr>
+        `;
+        shopDiv.appendChild(headerDiv);
+        
+        // Add items
+        items.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'shop-item';
+            if (!item.canAfford) {
+                itemDiv.style.opacity = '0.5';
+            }
+            
+            // Build effects display
+            const effectsArray = [];
+            for (const [stat, value] of Object.entries(item.effects)) {
+                if (value > 0) {
+                    effectsArray.push(`+${value} ${stat}`);
+                } else if (value < 0) {
+                    effectsArray.push(`${value} ${stat}`);
+                }
+            }
+            const effectsText = effectsArray.length > 0 ? 
+                `<span class="shop-item-effects">${effectsArray.join(', ')}</span>` : '';
+            
+            itemDiv.innerHTML = `
+                <h4>${item.name}</h4>
+                <p>${item.description}</p>
+                <span class="shop-item-price">$${item.price}</span>
+                ${effectsText}
+            `;
+            
+            if (item.canAfford) {
+                itemDiv.style.cursor = 'pointer';
+                itemDiv.addEventListener('click', () => this.buyItem(item.id));
+            }
+            
+            shopDiv.appendChild(itemDiv);
+        });
+    },
+    
+    // Buy item from shop
+    buyItem: function(itemId) {
+        const result = Shop.buyItem(itemId);
+        
+        if (result.success) {
+            this.addEventLog(result.message, 'success');
+            this.updateUI();
+            this.updateShop();
+        } else {
+            this.addEventLog(result.message, 'warning');
+        }
     },
     
     // Update inventory tab

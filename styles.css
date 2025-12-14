@@ -502,6 +502,71 @@ body {
     font-size: 0.9em;
 }
 
+/* Shop */
+.shop-header {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+}
+
+.shop-header h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.shop-header p {
+    color: #666;
+    font-size: 0.95em;
+    margin: 5px 0;
+}
+
+.shop-header hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.shop-item {
+    padding: 12px;
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 8px;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.shop-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.shop-item h4 {
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.shop-item p {
+    color: #666;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+}
+
+.shop-item-price {
+    display: inline-block;
+    color: #667eea;
+    font-weight: 700;
+    font-size: 1.1em;
+    margin-right: 10px;
+}
+
+.shop-item-effects {
+    display: inline-block;
+    color: #51cf66;
+    font-size: 0.85em;
+    font-weight: 600;
+}
+
 /* Inventory */
 .inventory-item {
     padding: 12px;

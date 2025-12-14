@@ -15,7 +15,7 @@ A comprehensive teenage life simulation video game built with HTML, CSS, and van
 ### Gameplay Systems
 
 #### Education System
-- Track grades in 6 subjects (Math, Science, English, History, Art, Physical Education)
+- Track grades in 4 subjects (Math, Science, English, History)
 - Study to improve grades
 - Take exams and complete assignments
 - Attend school on weekdays
@@ -28,12 +28,13 @@ A comprehensive teenage life simulation video game built with HTML, CSS, and van
 - Relationship status changes based on interactions
 
 #### Activities
-- **Study Activities**: Math, Science, English
+- **Study Activities**: Math, Science, English, History
 - **Social Activities**: Hang out with friends, parties, social media
 - **Physical Activities**: Exercise, sports practice
 - **Work**: Part-time job (available at age 15+)
-- **Leisure**: Video games, TV, reading, music, art
+- **Leisure**: Video games, TV, reading, music
 - **Self-Care**: Rest and sleep
+- **Shopping**: Visit the shop to spend money on items that boost stats and add to inventory
 
 ### Event System
 - Random events with multiple choice outcomes
@@ -79,6 +80,7 @@ GeminiTeenLifeSim/
 │   ├── activities.js     # Activity definitions and logic
 │   ├── relationships.js  # Relationship management
 │   ├── education.js      # Education system
+│   ├── shop.js           # Shop system and item definitions
 │   ├── events.js         # Event generation and handling
 │   └── ui.js             # UI updates and interactions
 └── README.md             # This file
