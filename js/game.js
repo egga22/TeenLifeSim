@@ -11,7 +11,6 @@ const Game = {
         
         // Stats (0-100)
         stats: {
-            health: 100,
             happiness: 100,
             intelligence: 50,
             popularity: 50,
@@ -30,9 +29,7 @@ const Game = {
             year: 2024,
             month: 9, // September (start of school year)
             day: 1,
-            dayOfWeek: 1, // Monday
-            period: 'morning', // morning, afternoon, evening, night
-            periodsInDay: 0
+            dayOfWeek: 1 // Monday
         },
         
         // Progress tracking
@@ -75,7 +72,6 @@ const Game = {
     // Reset stats to starting values
     resetStats: function() {
         this.state.stats = {
-            health: 100,
             happiness: 100,
             intelligence: 50,
             popularity: 50,
@@ -217,30 +213,18 @@ const Game = {
         return false;
     },
     
-    // Time advancement
+    // Time advancement - now just advances the day
     advanceTime: function() {
-        const periods = ['morning', 'afternoon', 'evening', 'night'];
-        const currentPeriodIndex = periods.indexOf(this.state.time.period);
-        
-        // Move to next period
-        if (currentPeriodIndex < periods.length - 1) {
-            this.state.time.period = periods[currentPeriodIndex + 1];
-            this.state.time.periodsInDay++;
-        } else {
-            // Advance to next day
-            this.advanceDay();
-        }
+        this.advanceDay();
         
         // Natural stat changes over time
         this.applyTimeEffects();
         
-        return this.state.time.period;
+        return 'next_day';
     },
     
     // Advance to next day
     advanceDay: function() {
-        this.state.time.period = 'morning';
-        this.state.time.periodsInDay = 0;
         this.state.progress.daysPlayed++;
         
         // Advance day of week
@@ -308,11 +292,6 @@ const Game = {
         // Happiness slowly decreases if not maintained
         if (this.state.stats.happiness > 60) {
             this.modifyStat('happiness', -1);
-        }
-        
-        // Health management
-        if (this.state.stats.health < 100) {
-            this.modifyStat('health', 1); // Slow regeneration
         }
     },
     

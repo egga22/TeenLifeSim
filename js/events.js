@@ -65,7 +65,7 @@ const Events = {
                 },
                 {
                     text: 'Push through',
-                    effects: { happiness: -5, intelligence: 3, health: -5 }
+                    effects: { happiness: -5, intelligence: 3 }
                 }
             ]
         },
@@ -106,7 +106,7 @@ const Events = {
             choices: [
                 {
                     text: 'Try to power through',
-                    effects: { health: -5 }
+                    effects: { happiness: -5 }
                 }
             ]
         },
@@ -186,20 +186,20 @@ const Events = {
         }
     ],
     
-    // Health events
+    // Health events (now just mood-based)
     healthEvents: [
         {
-            id: 'caught_cold',
-            text: 'You\'re coming down with a cold.',
+            id: 'feeling_down',
+            text: 'You\'re feeling a bit under the weather.',
             category: 'health',
             choices: [
                 {
                     text: 'Rest at home',
-                    effects: { health: 10, intelligence: -5, popularity: -5 }
+                    effects: { happiness: 5, intelligence: -5, popularity: -5 }
                 },
                 {
-                    text: 'Go to school anyway',
-                    effects: { health: -10, intelligence: 2, fitness: -5 }
+                    text: 'Push through it',
+                    effects: { happiness: -5, intelligence: 2, fitness: -5 }
                 }
             ]
         },
@@ -210,7 +210,7 @@ const Events = {
             choices: [
                 {
                     text: 'Feel guilty',
-                    effects: { health: -5, happiness: -5 }
+                    effects: { happiness: -5, fitness: -3 }
                 }
             ]
         }
@@ -222,7 +222,7 @@ const Events = {
         this.eventQueue = [];
         
         // Only trigger school events if player went to school
-        if (Game.isSchoolDay() && Game.state.time.period === 'morning' && Game.state.school.wentToSchool) {
+        if (Game.isSchoolDay() && Game.state.school.wentToSchool) {
             // Chance for school events
             if (Math.random() < 0.15) {
                 const event = this.schoolEvents[Math.floor(Math.random() * this.schoolEvents.length)];
@@ -257,8 +257,8 @@ const Events = {
             }
         }
         
-        // Check for health events
-        if (Game.state.stats.health < 30) {
+        // Check for mood events when feeling down
+        if (Game.state.stats.happiness < 30) {
             if (Math.random() < 0.3) {
                 const event = this.healthEvents[Math.floor(Math.random() * this.healthEvents.length)];
                 this.eventQueue.push(event);
@@ -276,7 +276,7 @@ const Events = {
                     },
                     {
                         text: 'Deal with it alone',
-                        effects: { happiness: -5, health: -5 }
+                        effects: { happiness: -5 }
                     }
                 ]
             });

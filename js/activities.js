@@ -11,8 +11,7 @@ const Activities = {
                 intelligence: 3,
                 happiness: -2
             },
-            schoolSubject: 'math',
-            availableWhen: ['morning', 'afternoon', 'evening']
+            schoolSubject: 'math'
         },
         study_science: {
             name: 'Study Science',
@@ -22,8 +21,7 @@ const Activities = {
                 intelligence: 3,
                 happiness: -1
             },
-            schoolSubject: 'science',
-            availableWhen: ['morning', 'afternoon', 'evening']
+            schoolSubject: 'science'
         },
         study_english: {
             name: 'Study English',
@@ -33,8 +31,7 @@ const Activities = {
                 intelligence: 2,
                 happiness: 0
             },
-            schoolSubject: 'english',
-            availableWhen: ['morning', 'afternoon', 'evening']
+            schoolSubject: 'english'
         },
         study_history: {
             name: 'Study History',
@@ -44,21 +41,17 @@ const Activities = {
                 intelligence: 3,
                 happiness: -1
             },
-            schoolSubject: 'history',
-            availableWhen: ['morning', 'afternoon', 'evening']
+            schoolSubject: 'history'
         },
         
-        // Chores (for earning money and mandatory when grounded)
+        // Chores (for earning money - now launches minigame)
         do_chores: {
             name: 'Do Chores',
-            description: 'Help out around the house and earn some money',
+            description: 'Help out around the house and earn some money (starts a minigame)',
             actionCost: 1,
-            effects: {
-                money: 10,
-                happiness: -3
-            },
-            availableWhen: ['morning', 'afternoon', 'evening'],
-            isMandatoryChore: true
+            effects: {},
+            isChore: true,
+            choreType: 'earning'
         },
         
         // Social Activities
@@ -71,7 +64,6 @@ const Activities = {
                 happiness: 5,
                 intelligence: -1
             },
-            availableWhen: ['afternoon', 'evening'],
             notWhenGrounded: true
         },
         party: {
@@ -80,10 +72,8 @@ const Activities = {
             actionCost: 2,
             effects: {
                 popularity: 10,
-                happiness: 10,
-                health: -5
+                happiness: 10
             },
-            availableWhen: ['evening', 'night'],
             weekendOnly: true,
             notWhenGrounded: true
         },
@@ -94,8 +84,7 @@ const Activities = {
             effects: {
                 popularity: 2,
                 happiness: 2
-            },
-            availableWhen: ['morning', 'afternoon', 'evening', 'night']
+            }
         },
         
         // Physical Activities
@@ -105,10 +94,8 @@ const Activities = {
             actionCost: 1,
             effects: {
                 fitness: 5,
-                health: 3,
                 happiness: 3
-            },
-            availableWhen: ['morning', 'afternoon', 'evening']
+            }
         },
         sports_practice: {
             name: 'Sports Practice',
@@ -116,11 +103,9 @@ const Activities = {
             actionCost: 1,
             effects: {
                 fitness: 7,
-                health: 2,
                 popularity: 3,
                 happiness: 5
             },
-            availableWhen: ['afternoon', 'evening'],
             notWhenGrounded: true
         },
         
@@ -134,7 +119,6 @@ const Activities = {
                 happiness: -5,
                 popularity: 1
             },
-            availableWhen: ['afternoon', 'evening'],
             minimumAge: 15,
             notWhenGrounded: true
         },
@@ -148,8 +132,7 @@ const Activities = {
                 happiness: 8,
                 intelligence: -1,
                 fitness: -1
-            },
-            availableWhen: ['afternoon', 'evening', 'night']
+            }
         },
         watch_tv: {
             name: 'Watch TV',
@@ -158,8 +141,7 @@ const Activities = {
             effects: {
                 happiness: 5,
                 fitness: -1
-            },
-            availableWhen: ['evening', 'night']
+            }
         },
         read_book: {
             name: 'Read a Book',
@@ -168,8 +150,7 @@ const Activities = {
             effects: {
                 intelligence: 2,
                 happiness: 4
-            },
-            availableWhen: ['afternoon', 'evening', 'night']
+            }
         },
         
         // Self-Care
@@ -178,10 +159,8 @@ const Activities = {
             description: 'Take a nap or relax',
             actionCost: 1,
             effects: {
-                health: 10,
-                happiness: 5
-            },
-            availableWhen: ['afternoon', 'evening']
+                happiness: 10
+            }
         },
         
         // Special Activities
@@ -194,7 +173,6 @@ const Activities = {
                 popularity: 4,
                 intelligence: 1
             },
-            availableWhen: ['afternoon'],
             weekendOnly: true,
             notWhenGrounded: true
         },
@@ -206,25 +184,18 @@ const Activities = {
                 intelligence: 2,
                 happiness: 6,
                 popularity: 1
-            },
-            availableWhen: ['afternoon', 'evening']
+            }
         }
     },
     
-    // Get available activities for current time
+    // Get available activities
     getAvailableActivities: function() {
         const available = [];
-        const currentPeriod = Game.state.time.period;
         const isWeekend = Game.isWeekend();
         const playerAge = Game.state.player.age;
         const isGrounded = Game.isGrounded();
         
         for (const [id, activity] of Object.entries(this.definitions)) {
-            // Check if available in current time period
-            if (!activity.availableWhen.includes(currentPeriod)) {
-                continue;
-            }
-            
             // Check weekend requirement
             if (activity.weekendOnly && !isWeekend) {
                 continue;
@@ -271,17 +242,22 @@ const Activities = {
             return { success: false, message: 'You\'re grounded and can\'t do this!' };
         }
         
+        // If this is a chore activity, launch the minigame instead
+        if (activity.isChore) {
+            return { 
+                success: true, 
+                launchMinigame: true, 
+                choreType: activity.choreType,
+                message: 'Starting chore minigame...'
+            };
+        }
+        
         // Use actions
         Game.useAction(activity.actionCost);
         
         // Apply effects
         for (const [stat, value] of Object.entries(activity.effects)) {
             Game.modifyStat(stat, value);
-        }
-        
-        // Track mandatory chores completion
-        if (activity.isMandatoryChore) {
-            Game.state.school.didMandatoryChores = true;
         }
         
         // Apply to education if it's a study activity
