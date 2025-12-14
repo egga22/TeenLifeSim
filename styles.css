@@ -421,6 +421,70 @@ body {
 }
 
 /* Education */
+.tier-info {
+    padding: 15px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 2px solid #667eea;
+}
+
+.tier-info h4 {
+    color: #667eea;
+    margin-bottom: 10px;
+}
+
+.tier-info h5 {
+    color: #333;
+    margin-top: 10px;
+    margin-bottom: 8px;
+}
+
+.tier-info p {
+    color: #666;
+    font-size: 0.95em;
+    margin: 5px 0;
+}
+
+.tier-info hr {
+    border: none;
+    border-top: 1px solid #ddd;
+    margin: 10px 0;
+}
+
+.tier-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 0.9em;
+}
+
+.tier-table th,
+.tier-table td {
+    padding: 8px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.tier-table th {
+    background: #667eea;
+    color: white;
+    font-weight: 600;
+}
+
+.tier-table tr:nth-child(even) {
+    background: #f8f9fa;
+}
+
+.tier-table tr.current-tier {
+    background: #d4edda;
+    font-weight: bold;
+}
+
+.tier-table tr.current-tier td {
+    color: #155724;
+}
+
 .subject-item {
     padding: 12px;
     margin-bottom: 10px;
