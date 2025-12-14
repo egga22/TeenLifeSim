@@ -283,7 +283,8 @@ const UI = {
         // Go to school button
         const goBtn = document.createElement('button');
         goBtn.className = 'choice-btn';
-        goBtn.textContent = 'Go to School (3 actions)';
+        const actionsAfterSchool = Education.getActionsForGradeTier();
+        goBtn.textContent = `Go to School (${actionsAfterSchool} actions)`;
         goBtn.addEventListener('click', () => this.handleSchoolChoice(true));
         choicesDiv.appendChild(goBtn);
         
@@ -342,9 +343,10 @@ const UI = {
     // Show Saturday detention
     showSaturdayDetention: function() {
         Game.state.school.saturdayDetention = false;
-        Game.setDailyActions(true); // Only 3 actions on detention day
+        Game.setDailyActions(true);
         
-        this.addEventLog('You have Saturday detention today. Only 3 actions available.', 'warning');
+        const actionsForDetention = Education.getActionsForGradeTier();
+        this.addEventLog(`You have Saturday detention today. Only ${actionsForDetention} actions available.`, 'warning');
         
         this.updateUI();
         this.updateActivities();
@@ -463,6 +465,58 @@ const UI = {
         const subjects = Education.getAllSubjects();
         
         educationDiv.innerHTML = '';
+        
+        // Add grade tier information at the top
+        const currentTier = Education.getCurrentTier();
+        const lowestGrade = Education.getLowestGrade();
+        const actionsForTier = Education.getActionsForGradeTier();
+        const allowanceForTier = Education.getAllowanceForGradeTier();
+        
+        const tierInfoDiv = document.createElement('div');
+        tierInfoDiv.className = 'tier-info';
+        tierInfoDiv.innerHTML = `
+            <h4>Current Grade Tier: ${currentTier}</h4>
+            <p>Lowest Subject Grade: ${Math.round(lowestGrade)}%</p>
+            <p>Actions after School: ${actionsForTier}</p>
+            <p>Weekly Allowance: $${allowanceForTier}</p>
+            <hr>
+            <h5>Grade Tier System:</h5>
+            <table class="tier-table">
+                <tr>
+                    <th>Tier</th>
+                    <th>Actions</th>
+                    <th>Allowance</th>
+                </tr>
+                <tr ${currentTier === 'A' ? 'class="current-tier"' : ''}>
+                    <td>A</td>
+                    <td>7</td>
+                    <td>$25</td>
+                </tr>
+                <tr ${currentTier === 'B' ? 'class="current-tier"' : ''}>
+                    <td>B</td>
+                    <td>6</td>
+                    <td>$20</td>
+                </tr>
+                <tr ${currentTier === 'C' ? 'class="current-tier"' : ''}>
+                    <td>C</td>
+                    <td>5</td>
+                    <td>$15</td>
+                </tr>
+                <tr ${currentTier === 'D' ? 'class="current-tier"' : ''}>
+                    <td>D</td>
+                    <td>4</td>
+                    <td>$10</td>
+                </tr>
+                <tr ${currentTier === 'F' ? 'class="current-tier"' : ''}>
+                    <td>F</td>
+                    <td>3</td>
+                    <td>$5</td>
+                </tr>
+            </table>
+            <p><small>Tier based on lowest subject grade. Actions apply on school days if not skipped.</small></p>
+            <hr>
+        `;
+        educationDiv.appendChild(tierInfoDiv);
         
         subjects.forEach(subject => {
             const subjectDiv = document.createElement('div');
