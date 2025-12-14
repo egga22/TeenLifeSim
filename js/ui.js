@@ -212,9 +212,9 @@ const UI = {
                         // Use the action only after completing the chore
                         Game.useAction(1);
                         // Earning chores give money
-                        Game.modifyStat('money', 10);
-                        Game.modifyStat('happiness', -3);
-                        this.addEventLog('You completed your chores and earned $10! -3 happiness', 'success');
+                        Game.modifyStat('money', Chores.EARNING_CHORE_REWARD);
+                        Game.modifyStat('happiness', Chores.EARNING_CHORE_HAPPINESS_COST);
+                        this.addEventLog(`You completed your chores and earned $${Chores.EARNING_CHORE_REWARD}! ${Chores.EARNING_CHORE_HAPPINESS_COST} happiness`, 'success');
                     } else {
                         this.addEventLog('You gave up on the chores.', 'warning');
                     }
@@ -255,6 +255,12 @@ const UI = {
         
         Game.advanceTime();
         
+        // Check for Saturday detention first (before weekend check)
+        if (Game.state.school.saturdayDetention && Game.state.time.dayOfWeek === 6) {
+            this.showSaturdayDetention();
+            return;
+        }
+        
         // Check if it's a school day - show school choice
         if (Game.isSchoolDay()) {
             this.showSchoolChoice();
@@ -263,12 +269,6 @@ const UI = {
             // Weekend - set 8 actions
             Game.setDailyActions(false);
             this.addEventLog('It\'s the weekend! You have 8 actions today.', 'success');
-        }
-        
-        // Check for Saturday detention
-        if (Game.state.school.saturdayDetention && Game.state.time.dayOfWeek === 6) {
-            this.showSaturdayDetention();
-            return;
         }
         
         // Check for mandatory chores when grounded (will be auto-triggered after school)

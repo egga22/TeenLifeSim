@@ -1,9 +1,13 @@
 // Chores Minigame System
 // These minigames are intentionally tedious and unfun to discourage excessive chore usage
-// Earning chores: Mow lawn, Wash dishes - pays $10
+// Earning chores: Mow lawn, Wash dishes - pays money
 // Punishment chores: Pick weeds, Wash windows - no pay, twice as tedious
 
 const Chores = {
+    // Constants for chore rewards
+    EARNING_CHORE_REWARD: 10,
+    EARNING_CHORE_HAPPINESS_COST: -3,
+    
     currentMinigame: null,
     callback: null,
     
@@ -185,17 +189,17 @@ const Chores = {
     },
     
     // ========== PICK WEEDS MINIGAME (PUNISHMENT - TWICE AS BAD) ==========
-    // Click each weed in a larger grid
+    // Click each weed in a larger grid - approximately 35 weeds on average
     showPickWeedsGame: function() {
-        const gridSize = 7; // 7x7 grid = 49 clicks (almost twice as many as lawn)
+        const gridSize = 7; // 7x7 grid = 49 cells
+        const WEED_PROBABILITY = 0.7; // 70% of cells are weeds
         let picked = 0;
-        const total = gridSize * gridSize;
         
         // Add random delays/misses to make it more tedious
         let gridHTML = '<div class="weed-grid">';
-        for (let i = 0; i < total; i++) {
+        for (let i = 0; i < gridSize * gridSize; i++) {
             // Mix of weeds and dirt - need to find the weeds
-            const isWeed = Math.random() > 0.3; // 70% weeds
+            const isWeed = Math.random() < WEED_PROBABILITY;
             if (isWeed) {
                 gridHTML += `<div class="weed-patch weed" data-index="${i}">🌱</div>`;
             } else {

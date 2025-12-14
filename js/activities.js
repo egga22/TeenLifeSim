@@ -166,7 +166,7 @@ const Activities = {
         // Special Activities
         volunteer: {
             name: 'Volunteer Work',
-            description: 'Help out in the community (weekend only)',
+            description: 'Help out in the community',
             actionCost: 1,
             effects: {
                 happiness: 8,
