@@ -36,6 +36,17 @@ const Activities = {
             schoolSubject: 'english',
             availableWhen: ['morning', 'afternoon', 'evening']
         },
+        study_history: {
+            name: 'Study History',
+            description: 'Learn about historical events and analyze the past',
+            actionCost: 1,
+            effects: {
+                intelligence: 3,
+                happiness: -1
+            },
+            schoolSubject: 'history',
+            availableWhen: ['morning', 'afternoon', 'evening']
+        },
         
         // Chores (for earning money and mandatory when grounded)
         do_chores: {
@@ -194,17 +205,6 @@ const Activities = {
             effects: {
                 intelligence: 2,
                 happiness: 6,
-                popularity: 1
-            },
-            availableWhen: ['afternoon', 'evening']
-        },
-        art_project: {
-            name: 'Work on Art',
-            description: 'Draw, paint, or create',
-            actionCost: 1,
-            effects: {
-                intelligence: 2,
-                happiness: 7,
                 popularity: 1
             },
             availableWhen: ['afternoon', 'evening']
