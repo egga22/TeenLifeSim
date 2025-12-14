@@ -474,48 +474,52 @@ const UI = {
         
         const tierInfoDiv = document.createElement('div');
         tierInfoDiv.className = 'tier-info';
-        tierInfoDiv.innerHTML = `
+        
+        // Create header info
+        const headerHTML = `
             <h4>Current Grade Tier: ${currentTier}</h4>
             <p>Lowest Subject Grade: ${Math.round(lowestGrade)}%</p>
             <p>Actions after School: ${actionsForTier}</p>
             <p>Weekly Allowance: $${allowanceForTier}</p>
             <hr>
             <h5>Grade Tier System:</h5>
+        `;
+        
+        // Tier definitions (matches Education.js)
+        const tiers = [
+            { tier: 'A', actions: 7, allowance: 25 },
+            { tier: 'B', actions: 6, allowance: 20 },
+            { tier: 'C', actions: 5, allowance: 15 },
+            { tier: 'D', actions: 4, allowance: 10 },
+            { tier: 'F', actions: 3, allowance: 5 }
+        ];
+        
+        // Build tier table
+        const tableRows = tiers.map(t => 
+            `<tr ${currentTier === t.tier ? 'class="current-tier"' : ''}>
+                <td>${t.tier}</td>
+                <td>${t.actions}</td>
+                <td>$${t.allowance}</td>
+            </tr>`
+        ).join('');
+        
+        const tableHTML = `
             <table class="tier-table">
                 <tr>
                     <th>Tier</th>
                     <th>Actions</th>
                     <th>Allowance</th>
                 </tr>
-                <tr ${currentTier === 'A' ? 'class="current-tier"' : ''}>
-                    <td>A</td>
-                    <td>7</td>
-                    <td>$25</td>
-                </tr>
-                <tr ${currentTier === 'B' ? 'class="current-tier"' : ''}>
-                    <td>B</td>
-                    <td>6</td>
-                    <td>$20</td>
-                </tr>
-                <tr ${currentTier === 'C' ? 'class="current-tier"' : ''}>
-                    <td>C</td>
-                    <td>5</td>
-                    <td>$15</td>
-                </tr>
-                <tr ${currentTier === 'D' ? 'class="current-tier"' : ''}>
-                    <td>D</td>
-                    <td>4</td>
-                    <td>$10</td>
-                </tr>
-                <tr ${currentTier === 'F' ? 'class="current-tier"' : ''}>
-                    <td>F</td>
-                    <td>3</td>
-                    <td>$5</td>
-                </tr>
+                ${tableRows}
             </table>
+        `;
+        
+        const footerHTML = `
             <p><small>Tier based on lowest subject grade. Actions apply on school days if not skipped.</small></p>
             <hr>
         `;
+        
+        tierInfoDiv.innerHTML = headerHTML + tableHTML + footerHTML;
         educationDiv.appendChild(tierInfoDiv);
         
         subjects.forEach(subject => {
