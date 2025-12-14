@@ -285,8 +285,9 @@ const Activities = {
         }
         
         // Apply to education if it's a study activity
+        let tierChange = null;
         if (activity.schoolSubject) {
-            Education.study(activity.schoolSubject, activity.effects.intelligence || 0);
+            tierChange = Education.study(activity.schoolSubject, activity.effects.intelligence || 0);
         }
         
         // Build result message
@@ -308,7 +309,8 @@ const Activities = {
         return {
             success: true,
             message: message,
-            activity: activity
+            activity: activity,
+            tierChange: tierChange
         };
     }
 };

@@ -61,7 +61,6 @@ const Game = {
     STATS_MIN: 0,
     STATS_MAX: 100,
     MAX_AGE: 18,
-    ACTIONS_SCHOOL: 3,
     ACTIONS_FREE: 8,
     
     // Initialize game
@@ -116,11 +115,13 @@ const Game = {
         return this.state.actions.current >= cost;
     },
     
-    // Set actions for the day based on school attendance
+    // Set actions for the day based on school attendance and grade tier
     setDailyActions: function(wentToSchool) {
         if (wentToSchool) {
-            this.state.actions.current = this.ACTIONS_SCHOOL;
-            this.state.actions.max = this.ACTIONS_SCHOOL;
+            // Actions after school are determined by grade tier
+            const actionsAfterSchool = Education.getActionsForGradeTier();
+            this.state.actions.current = actionsAfterSchool;
+            this.state.actions.max = actionsAfterSchool;
         } else {
             this.state.actions.current = this.ACTIONS_FREE;
             this.state.actions.max = this.ACTIONS_FREE;
@@ -166,7 +167,8 @@ const Game = {
         if (this.state.school.noAllowanceDaysLeft > 0) {
             return 0;
         }
-        return 20; // Base weekly allowance
+        // Weekly allowance is determined by grade tier
+        return Education.getAllowanceForGradeTier();
     },
     
     // Modify stat with bounds checking
